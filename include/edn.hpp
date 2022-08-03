@@ -16,11 +16,11 @@ namespace dv {
 
     struct Event {
         uint64_t ts;
-        uint16_t x;
-        uint16_t y;
-        bool p;
+        int16_t x;
+        int16_t y;
+        int8_t  p;
 
-        Event(uint64_t ts_, uint16_t x_, uint16_t y_, bool p_) : ts(ts_), x(x_), y(y_), p(p_) {}
+        Event(uint64_t ts_, uint16_t x_, uint16_t y_, bool p_) : ts(ts_), x(x_), y(y_), p(2 * p_ - 1) {}
     };
 
     struct matrix
@@ -60,7 +60,7 @@ namespace edn {
         uint64_t *tsMatrix;
 
     public:
-        BackgroundActivityFilter(uint16_t sizeX, uint16_t sizeY);
+        BackgroundActivityFilter(uint16_t sizeX, uint16_t sizeY, std::tuple<int, int, int, bool> params);
         py::array_t<bool> run(py::array_t<uint64_t> arrts, py::array_t<uint16_t> arrx, py::array_t<uint16_t> arry, py::array_t<bool> arrp);
 
         // Addtional function
@@ -76,7 +76,7 @@ namespace edn {
         boost::circular_buffer<dv::Event> lastREvents;
         boost::circular_buffer<dv::Event> lastNEvents;
     public:
-        DoubleWindowFilter(uint16_t sizeX, uint16_t sizeY, std::tuple<int, int, bool, int> params);
+        DoubleWindowFilter(uint16_t sizeX, uint16_t sizeY, std::tuple<int, int, int, bool> params);
         py::array_t<bool> run(py::array_t<uint64_t> arrts, py::array_t<uint16_t> arrx, py::array_t<uint16_t> arry, py::array_t<bool> arrp);
 
         // Addtional function

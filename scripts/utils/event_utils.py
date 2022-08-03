@@ -30,3 +30,40 @@ def polarity_removal(ev, size):
     ev[:, 3] = 0
     return ev
 
+
+def count_distribution(ev, size, use_polarity=True):
+    bins_, range_  = [size[0], size[1]], [[0, size[0]], [0, size[1]]]
+
+    if use_polarity:
+        weights = (-1) ** (1 + ev[:, 3].astype(np.float_))
+    else:
+        weights = (+1) ** (0 + ev[:, 3].astype(np.float_))
+
+    counts, *_ = np.histogram2d(ev[:, 1], ev[:, 2], weights=weights, bins=bins_, range=range_)
+
+    return counts
+
+
+def package_along_timestamp(ev, size, duration):
+    duration = int(duration)
+    ts_refer = np.arange(ev[0, 0], ev[-1, 0], duration)
+    ts_refer_index = np.searchsorted(ev[:, 0], ts_refer)[1:]
+
+    packets = [ei for ei in np.split(ev, ts_refer_index)]
+    return packets
+
+
+def projection_image(ev, size, max_count=1, flip=True):
+    cnt = count_distribution(ev, size)
+    cnt = np.clip(np.abs(cnt), 0, max_count).astype(np.int_)
+
+    color = np.linspace(0, 255, max_count + 1)
+
+    img = np.ones((*size, 3)) * 255
+    img[ev[:, 1], ev[:, 2], 1 - ev[:, 3]] = color[-1 - cnt[ev[:, 1], ev[:, 2]]]
+    img[ev[:, 1], ev[:, 2], 2 - ev[:, 3]] = color[-1 - cnt[ev[:, 1], ev[:, 2]]]
+
+    if flip:
+        img = np.flip(np.rot90(img, 1), axis=0).astype(np.uint8)
+
+    return img

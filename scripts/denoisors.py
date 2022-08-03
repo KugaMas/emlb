@@ -42,7 +42,7 @@ class EventDenoisors(ABC):
 
 class baf(EventDenoisors):
     def __init__(self, use_polarity=True, excl_hotpixel=True,
-                 threshold=1, radius=1, delta_t=10000, cal_polarity=True):
+                 threshold=1, radius_norm_l2=1, delta_t=10000, cal_polarity=True):
         self.name           = 'BAF'
         self.annotation     = 'Background Activity Filter'
         self.use_polarity   = use_polarity
@@ -50,22 +50,21 @@ class baf(EventDenoisors):
 
         self.params = {
             'threshold': threshold,
-            'radius'   : radius,
+            'radiusNL2': radius_norm_l2,
             'deltaT'   : delta_t,
             'cal_polarity' : cal_polarity,
         }
 
     def run(self, ev, fr, size):
         ts, x, y, p = self.pre_prosess(self, ev, size)
-        # model = cdn.dwf(size[0], size[1], tuple(self.params.values()))
-        model = cdn.baf(size[0], size[1])
+        model = cdn.baf(size[0], size[1], tuple(self.params.values()))
         idx = model.run(ts, x, y, p)
         return ev[idx]
 
 
 class dwf(EventDenoisors):
     def __init__(self, use_polarity=True, excl_hotpixel=True,
-                 threshold=1, radius=10, double_mode=True, window_size=8):
+                 threshold=1, radius_norm_l1=10, window_size=8, double_mode=True):
         self.name           = 'DWF'
         self.annotation     = 'Double Window Filter'
         self.use_polarity   = use_polarity
@@ -73,9 +72,9 @@ class dwf(EventDenoisors):
 
         self.params = {
             'threshold': threshold,
-            'radius'   : radius,
-            'duoMode'  : double_mode,
+            'radiusNL1': radius_norm_l1,
             'winSize'  : window_size,
+            'duoMode'  : double_mode,
         }
 
     def run(self, ev, fr, size):
@@ -87,7 +86,7 @@ class dwf(EventDenoisors):
 
 class mlpf(EventDenoisors):
     def __init__(self, use_polarity=True, excl_hotpixel=True,
-                 threshold=0.5, radius=3, tau_ts=1E5, cal_timestamp=True, cal_polarity=True, model_path="2xMSEO1H20_linear_7.pt"):
+                 threshold=0.5, radius_norm_l2=3, tau_ts=1E5, cal_timestamp=True, cal_polarity=True, model_path="2xMSEO1H20_linear_7.pt"):
         self.name           = 'MLPF'
         self.annotation     = 'Multi Layer Perceptron Filter'
         self.use_polarity   = use_polarity
@@ -95,7 +94,7 @@ class mlpf(EventDenoisors):
 
         self.params = {
             'threshold': threshold,
-            'radius'   : radius,
+            'radiusNL2': radius_norm_l2,
             'tauTs'    : tau_ts,
             'cal_timestamp' : cal_timestamp,
             'cal_polarity'  : cal_polarity,
