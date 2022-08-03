@@ -26,14 +26,61 @@ std::vector<bool> edn::EventDenoisor::initialization(py::array_t<uint64_t> arrts
     return vec;
 }
 
+/* Background Activity Filter */
+edn::BackgroundActivityFilter::BackgroundActivityFilter(uint16_t sizeX, uint16_t sizeY) : EventDenoisor(sizeX, sizeY) {
+    thres = 1;
+    rL2Norm = 1;
+    deltaT = 10000;
+    usePolarity = true;
+    
+    polMatrix = (int8_t*)  std::calloc(sizeX * sizeY, sizeof(int8_t));
+    tsMatrix  = (uint64_t*) std::calloc(sizeX * sizeY, sizeof(uint64_t));
+}
+
+py::array_t<bool> edn::BackgroundActivityFilter::run(py::array_t<uint64_t> arrts, py::array_t<uint16_t> arrx, py::array_t<uint16_t> arry, py::array_t<bool> arrp) {
+    std::vector<bool> vec = edn::EventDenoisor::initialization(arrts, arrx, arry, arrp);
+    rL2Norm = 1;
+    for(int i = 0; i < evlen; i++) {
+        dv::Event event(ptrts[i], ptrx[i], ptry[i], ptrp[i]);
+
+        int evIdx = event.x * sizeY + event.y;
+        if (calculateDensity(event) >= thres) {
+            vec[i] = true;
+        }
+
+        tsMatrix[evIdx]  = event.ts;
+        polMatrix[evIdx] = 2 * event.p - 1;
+    }
+
+    return py::cast(vec);
+}
+
+int edn::BackgroundActivityFilter::calculateDensity(dv::Event& event) {
+    int nCorrelated = 0;
+    int evPol = 2 * event.p - 1;
+
+    for (int i = event.x - rL2Norm; i <= event.x + rL2Norm; i++) {
+        for (int j = event.y - rL2Norm; j <= event.y + rL2Norm; j++) {
+            if (i < 0 || i >= sizeX || j < 0 || j >= sizeY) continue;
+
+            int nnIdx = i * sizeY + j;
+            if (usePolarity && evPol != polMatrix[nnIdx]) continue;
+            if (event.ts - tsMatrix[nnIdx] <= deltaT) nCorrelated++;
+            if (nCorrelated >= thres) return nCorrelated;
+        }
+    }
+
+    return nCorrelated;
+}
+
 
 /* Double Window Filter */
 edn::DoubleWindowFilter::DoubleWindowFilter(uint16_t sizeX, uint16_t sizeY, std::tuple<int, int, bool, int> params) : EventDenoisor(sizeX, sizeY) {
-        std::tie(thres, radius, DoubleMode, memSize) = params;
-        memSize = DoubleMode ? memSize : memSize / 2;
-        lastREvents.set_capacity(memSize);
-        lastNEvents.set_capacity(memSize);
-    }
+    std::tie(thres, rL1Norm, DoubleMode, memSize) = params;
+    memSize = DoubleMode ? memSize : memSize / 2;
+    lastREvents.set_capacity(memSize);
+    lastNEvents.set_capacity(memSize);
+}
 
 py::array_t<bool> edn::DoubleWindowFilter::run(py::array_t<uint64_t> arrts, py::array_t<uint16_t> arrx, py::array_t<uint16_t> arry, py::array_t<bool> arrp) {
     std::vector<bool> vec = edn::EventDenoisor::initialization(arrts, arrx, arry, arrp);
@@ -63,13 +110,13 @@ int edn::DoubleWindowFilter::calculateDensity(dv::Event& event) {
     int nCorrelated = 0;
     for (const auto& lastR : lastREvents) {
         distance = std::abs(event.x - lastR.x) + std::abs(event.y - lastR.y);
-        if (distance <= radius) nCorrelated++;
+        if (distance <= rL1Norm) nCorrelated++;
         if (nCorrelated >= thres) break;
     }
 
     for (const auto& lastN : lastNEvents) {
         distance = std::abs(event.x - lastN.x) + std::abs(event.y - lastN.y);
-        if (distance <= radius) nCorrelated++;
+        if (distance <= rL1Norm) nCorrelated++;
         if (nCorrelated >= thres) break;
     }
 
@@ -79,9 +126,9 @@ int edn::DoubleWindowFilter::calculateDensity(dv::Event& event) {
 
 /* Multi Layer Perceptron Filter */
 edn::MultiLayerPerceptronFilter::MultiLayerPerceptronFilter(uint16_t sizeX, uint16_t sizeY, std::tuple<float, int, float, bool, bool, string> params) : EventDenoisor(sizeX, sizeY) {
-    std::tie(thres, radius, tauTs, usePolarity, useTimestamp, model_path) = params;
+    std::tie(thres, rL2Norm, tauTs, usePolarity, useTimestamp, model_path) = params;
     
-    int square = (2 * radius + 1) * (2 * radius + 1);
+    int square = (2 * rL2Norm + 1) * (2 * rL2Norm + 1);
     memSize = usePolarity * square + useTimestamp * square;
 
     polMatrix = (int8_t*)  std::calloc(sizeX * sizeY, sizeof(int8_t));
@@ -120,8 +167,8 @@ std::vector<float> edn::MultiLayerPerceptronFilter::buildInputTensor(dv::Event& 
     if (tsMatrix[evIdx] == 0) tsMatrix[evIdx] = event.ts;
 
     if (useTimestamp) {
-        for (int i  = event.x - radius; i <= event.x + radius; i++) {
-            for (int j  = event.y - radius; j <= event.y + radius; j++) {
+        for (int i  = event.x - rL2Norm; i <= event.x + rL2Norm; i++) {
+            for (int j  = event.y - rL2Norm; j <= event.y + rL2Norm; j++) {
                 // outside address space
                 if (i < 0 || i >= sizeX || j < 0 || j >= sizeY) {
                     patch[k++] = 0;
@@ -144,8 +191,8 @@ std::vector<float> edn::MultiLayerPerceptronFilter::buildInputTensor(dv::Event& 
 
     polMatrix[evIdx] = 2L * event.p - 1L;
     if (usePolarity) {
-        for (int i  = event.x - radius; i <= event.x + radius; i++) {
-            for (int j  = event.y - radius; j <= event.y + radius; j++) {               
+        for (int i  = event.x - rL2Norm; i <= event.x + rL2Norm; i++) {
+            for (int j  = event.y - rL2Norm; j <= event.y + rL2Norm; j++) {               
                 // outside address space
                 if (i < 0 || i >= sizeX || j < 0 || j >= sizeY) {
                     patch[k++] = 0L;
@@ -179,4 +226,8 @@ PYBIND11_MODULE(cdn_utils, m)
     py::class_<edn::MultiLayerPerceptronFilter>(m, "mlpf")
         .def(py::init<uint16_t, uint16_t, std::tuple<float, int, float, bool, bool, string>>())
         .def("run", &edn::MultiLayerPerceptronFilter::run);
+
+    py::class_<edn::BackgroundActivityFilter>(m, "baf")
+        .def(py::init<uint16_t, uint16_t>())
+        .def("run", &edn::BackgroundActivityFilter::run);
 }

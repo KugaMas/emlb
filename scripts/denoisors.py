@@ -40,6 +40,29 @@ class EventDenoisors(ABC):
         pass
 
 
+class baf(EventDenoisors):
+    def __init__(self, use_polarity=True, excl_hotpixel=True,
+                 threshold=1, radius=1, delta_t=10000, cal_polarity=True):
+        self.name           = 'BAF'
+        self.annotation     = 'Background Activity Filter'
+        self.use_polarity   = use_polarity
+        self.excl_hotpixel  = excl_hotpixel
+
+        self.params = {
+            'threshold': threshold,
+            'radius'   : radius,
+            'deltaT'   : delta_t,
+            'cal_polarity' : cal_polarity,
+        }
+
+    def run(self, ev, fr, size):
+        ts, x, y, p = self.pre_prosess(self, ev, size)
+        # model = cdn.dwf(size[0], size[1], tuple(self.params.values()))
+        model = cdn.baf(size[0], size[1])
+        idx = model.run(ts, x, y, p)
+        return ev[idx]
+
+
 class dwf(EventDenoisors):
     def __init__(self, use_polarity=True, excl_hotpixel=True,
                  threshold=1, radius=10, double_mode=True, window_size=8):
@@ -47,11 +70,6 @@ class dwf(EventDenoisors):
         self.annotation     = 'Double Window Filter'
         self.use_polarity   = use_polarity
         self.excl_hotpixel  = excl_hotpixel
-            
-        self.threshold = threshold
-        self.radius    = radius
-        self.duoMode   = double_mode
-        self.winSize   = window_size
 
         self.params = {
             'threshold': threshold,

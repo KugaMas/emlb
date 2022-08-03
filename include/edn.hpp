@@ -22,6 +22,13 @@ namespace dv {
 
         Event(uint64_t ts_, uint16_t x_, uint16_t y_, bool p_) : ts(ts_), x(x_), y(y_), p(p_) {}
     };
+
+    struct matrix
+    {
+        uint64_t timestamp;
+        bool polarity;
+        matrix() : timestamp(0), polarity(false) {}
+    };
 }
 
 namespace edn {
@@ -43,10 +50,27 @@ namespace edn {
         virtual std::vector<bool> initialization(py::array_t<uint64_t> arrts, py::array_t<uint16_t> arrx, py::array_t<uint16_t> arry, py::array_t<bool> arrp);
     };
 
+    class BackgroundActivityFilter : public EventDenoisor {
+    private:
+        int thres;
+        int deltaT;
+        int rL2Norm;
+        bool usePolarity;
+        int8_t *polMatrix; 
+        uint64_t *tsMatrix;
+
+    public:
+        BackgroundActivityFilter(uint16_t sizeX, uint16_t sizeY);
+        py::array_t<bool> run(py::array_t<uint64_t> arrts, py::array_t<uint16_t> arrx, py::array_t<uint16_t> arry, py::array_t<bool> arrp);
+
+        // Addtional function
+        int calculateDensity(dv::Event& event);
+    };
+
     class DoubleWindowFilter: public EventDenoisor {
     private:
         int thres;
-        int radius;
+        int rL1Norm;
         int memSize;
         bool DoubleMode;
         boost::circular_buffer<dv::Event> lastREvents;
@@ -61,7 +85,7 @@ namespace edn {
 
     class MultiLayerPerceptronFilter: public EventDenoisor {
     private:
-        int radius;
+        int rL2Norm;
         float tauTs;
         float thres;
         bool usePolarity;
