@@ -29,9 +29,16 @@ unzip libtorch-shared-with-deps-1.12.0+cu116.zip
 
 ```
 
-## Installation
+## Requirement
++ python = 3.8
++ cuda = 11.6
 
-+ **Pybind11**
+you can use the following order to install relevant packages in you `Conda Env` environment. 
+
+```
+pip install -r requirements.txt
+```
+
 
 ## Data preparation
 **Layout** After downloading or collecting a new dataset, you need to rearrange your dataset in the following struture such as `/Dataset/Subclass/Sequences.*`, an example is shown as below. 
