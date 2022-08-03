@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-To ensure the execution of our program, you need to download additional [pybind11](https://github.com/pybind/pybind11) and [onnxruntime](https://github.com/microsoft/onnxruntime) libraries to help our cpp file compile. If you have installed them before, you can skip this step and directly modify the reference of `CMakeLists.txt`.
+To ensure the execution of our program, you need to download additional [pybind11](https://github.com/pybind/pybind11) and [libtorch](https://pytorch.org/) libraries to help our cpp file compile. If you have installed them before, you can skip this step and directly modify the reference of `CMakeLists.txt`.
 
 ```
 cd EMLB
@@ -17,16 +17,7 @@ sudo apt-get install python3-dev
 sudo apt-get install libboost-all-dev
 
 # clone pybind11 in our repository, or you can put them in another path
-git submodule add -b stable https://github.com/pybind/pybind11
-```
-
-**onnxruntime** if you want to onnxruntime works well, you need to make them
-
-```
-git submodule add -b v.1.8.0 https://github.com/microsoft/onnxruntime
-
-cd extern/onnxruntime
-./build.sh --skip_tests --config Release --build_shared_lib --parallel
+git submodule add -b stable https://github.com/pybind/pybind11 extern/pybind11
 ```
 
 **libtorch**
