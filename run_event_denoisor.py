@@ -12,8 +12,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Deployment of EMLB benchmark')
     parser.add_argument('-i', '--input_path', type=str, default='datasets', help='path to load dataset')
     parser.add_argument('-o', '--output_path', type=str, default='results', help='path to output denoising result')
-    parser.add_argument('-d', '--denoisors', type=list, default=['dwf', ], help='choose denoisors')
-    parser.add_argument("-p", "--params", type=float, default=[[], ], nargs='+', help="specified parameters")
+    parser.add_argument('-d', '--denoisors', type=list, default=['dwf', 'mlpf'], help='choose denoisors')
+    parser.add_argument("-p", "--params", type=float, default=[[], []], nargs='+', help="specified parameters")
     args = set_inference_options(parser)
     
     for idx in range(len(args.denoisors)):
@@ -33,10 +33,7 @@ if __name__ == '__main__':
                 ev, fr, size = load_file(fdata.path, aps=fdata.use_aps, size=fdata.size)
                 # start model inference
                 
-                st = time.time()
                 ev = model.run(ev, fr, size)
-                ed = time.time()
-                print(ed - st)
 
                 # save inference result
                 save_file(ev, fr, model, output_path)

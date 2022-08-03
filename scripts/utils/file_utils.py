@@ -14,7 +14,7 @@ from numpy.lib import recfunctions as rfn
 def load_file(file_path, size=(-1, -1), aps=False):
     ev, fr = None, None
     ext = osp.splitext(osp.basename(file_path))[1]
-    assert ext in ['.h5', '.pkl', '.aedat4'], "Unsupported read file type"
+    assert ext in ['.h5', '.txt', '.pkl', '.aedat4'], "Unsupported read file type"
     
     if ext == '.aedat4':
         with AedatFile(file_path) as f:
