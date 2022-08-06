@@ -15,33 +15,43 @@ edn::MultiLayerPerceptronFilter::MultiLayerPerceptronFilter(uint16_t sizeX, uint
 
     polMatrix = (int8_t*)  std::calloc(sizeX * sizeY, sizeof(int8_t));
     tsMatrix  = (uint64_t*) std::calloc(sizeX * sizeY, sizeof(uint64_t));
+
+
+    
 }
 
 py::array_t<bool> edn::MultiLayerPerceptronFilter::run(py::array_t<uint64_t> arrts, py::array_t<uint16_t> arrx, py::array_t<uint16_t> arry, py::array_t<bool> arrp) {
     std::vector<bool> vec = edn::EventDenoisor::initialization(arrts, arrx, arry, arrp);
 
-    torch::Device device(torch::kCUDA);
+    torch::DeviceType device_type;
+    if (torch::cuda::is_available()) {
+        device_type = torch::kCUDA;
+    } else {
+        device_type = torch::kCPU;
+        std::cout << "Warning: you are using cpu to inference, please check your graphic cards!" << std::endl;
+    }
+    torch::Device device = torch::Device(device_type);
+
     auto module = torch::jit::load(model_path, device);
-    module.to(device);
 
     auto input = torch::empty({batchSize, memSize});
     for(int i = 0; i < evlen; i++) {
         dv::Event event(ptrts[i], ptrx[i], ptry[i], ptrp[i]);
-        
+
         int k = i % batchSize;
 
         // build input
         std::vector<float> patch = buildInputTensor(event);
         input[k] = torch::from_blob(patch.data(), {memSize}, torch::kFloat);
-        
+
+        // do inference
         if (k == batchSize - 1 || i == evlen - 1) {
-            // do inference
             input = input.to(device);
             torch::Tensor output = module.forward({input}).toTensor().to(torch::kCPU);
             
-            float* res = (float* )(output.data_ptr());
+            float* result = (float* )(output.data_ptr());
             for (int j = 0; k >= 0; k--) {
-                if (*res++ >= thres) vec[i - k] = true;
+                if (*result++ >= thres) vec[i - k] = true;
             }
         }
     

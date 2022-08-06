@@ -7,6 +7,8 @@
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <boost/circular_buffer.hpp>
+#include <torch/torch.h>
+#include <torch/script.h>
 
 namespace py = pybind11;
 
