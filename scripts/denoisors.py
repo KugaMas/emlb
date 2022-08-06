@@ -86,16 +86,17 @@ class dwf(EventDenoisors):
 
 class mlpf(EventDenoisors):
     def __init__(self, use_polarity=True, excl_hotpixel=True,
-                 threshold=0.5, radius_norm_l2=3, tau_ts=1E5, cal_timestamp=True, cal_polarity=True, model_path="2xMSEO1H20_linear_7.pt"):
+                 threshold=0.5, radius_norm_l2=3, tau_ts=1E5, batch_size=1E7, cal_timestamp=True, cal_polarity=True, model_path="2xMSEO1H20_linear_7.pt"):
         self.name           = 'MLPF'
         self.annotation     = 'Multi Layer Perceptron Filter'
         self.use_polarity   = use_polarity
         self.excl_hotpixel  = excl_hotpixel
 
         self.params = {
-            'threshold': threshold,
-            'radiusNL2': radius_norm_l2,
-            'tauTs'    : tau_ts,
+            'threshold' : threshold,
+            'radiusNL2' : radius_norm_l2,
+            'tauTs'     : tau_ts,
+            'batch_size': int(batch_size),
             'cal_timestamp' : cal_timestamp,
             'cal_polarity'  : cal_polarity,
             'model_path'    : osp.join(cwd, model_path),

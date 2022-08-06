@@ -88,6 +88,7 @@ namespace edn {
         int rL2Norm;
         float tauTs;
         float thres;
+        int batchSize;
         bool usePolarity;
         bool useTimestamp;
         string model_path;
@@ -97,7 +98,7 @@ namespace edn {
         uint64_t *tsMatrix;
 
     public:
-        MultiLayerPerceptronFilter(uint16_t sizeX, uint16_t sizeY, std::tuple<float, int, float, bool, bool, string> params);
+        MultiLayerPerceptronFilter(uint16_t sizeX, uint16_t sizeY, std::tuple<float, int, float, int, bool, bool, string> params);
         py::array_t<bool> run(py::array_t<uint64_t> arrts, py::array_t<uint16_t> arrx, py::array_t<uint16_t> arry, py::array_t<bool> arrp);
 
         // Addtional function
