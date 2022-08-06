@@ -1,0 +1,11 @@
+build/
+extern/
+datasets/
+results/
+
+.vscode/
+.idea/
+
+*.so
+
+__pycache__
