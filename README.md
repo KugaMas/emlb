@@ -68,7 +68,7 @@ Datasets/
 
 If you use any of this code, please cite: 
 
-+ **KNoise** Khodamoradi, Alireza, and Ryan Kastner. "$ O (N) $ O (N)-Space Spatiotemporal Filter for Reducing Noise in Neuromorphic Vision Sensors." IEEE Transactions on Emerging Topics in Computing 9.1 (2018): 15-23.
+**KNoise** Khodamoradi, Alireza, and Ryan Kastner. "$ O (N) $ O (N)-Space Spatiotemporal Filter for Reducing Noise in Neuromorphic Vision Sensors." IEEE Transactions on Emerging Topics in Computing 9.1 (2018): 15-23.
 
 > @article{khodamoradi2018n,  
 > title={$ O (N) $ O (N)-Space Spatiotemporal Filter for Reducing Noise in Neuromorphic Vision Sensors},  
@@ -78,7 +78,7 @@ If you use any of this code, please cite:
 > publisher={IEEE}  
 }
 
-+ **DWF & MLPF** Guo, Shasha, and Tobi Delbruck. "Low Cost and Latency Event Camera Background Activity Denoising." IEEE Transactions on Pattern Analysis and Machine Intelligence (2022).
+**DWF & MLPF** Guo, Shasha, and Tobi Delbruck. "Low Cost and Latency Event Camera Background Activity Denoising." IEEE Transactions on Pattern Analysis and Machine Intelligence (2022).
 
 > @article{guo2022low,  
 > title={Low Cost and Latency Event Camera Background Activity Denoising},  
@@ -86,4 +86,13 @@ If you use any of this code, please cite:
 > journal={IEEE Transactions on Pattern Analysis and Machine Intelligence},  
 > year={2022},  
 > publisher={IEEE}  
+> }
+
+**EDnCNN** Baldwin, R., et al. "Event probability mask (epm) and event denoising convolutional neural network (edncnn) for neuromorphic cameras." Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2020.
+> @inproceedings{baldwin2020event,  
+> title={Event probability mask (epm) and event denoising convolutional neural network (edncnn) for neuromorphic cameras},  
+> author={Baldwin, R and Almatrafi, Mohammed and Asari, Vijayan and Hirakawa, Keigo},  
+> booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},  
+> pages={1701--1710},  
+> year={2020}  
 > }
