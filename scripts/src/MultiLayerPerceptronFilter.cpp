@@ -23,6 +23,7 @@ edn::MultiLayerPerceptronFilter::MultiLayerPerceptronFilter(uint16_t sizeX, uint
 py::array_t<bool> edn::MultiLayerPerceptronFilter::run(py::array_t<uint64_t> arrts, py::array_t<uint16_t> arrx, py::array_t<uint16_t> arry, py::array_t<bool> arrp) {
     std::vector<bool> vec = edn::EventDenoisor::initialization(arrts, arrx, arry, arrp);
 
+     // choose inference device
     torch::DeviceType device_type;
     if (torch::cuda::is_available()) {
         device_type = torch::kCUDA;
@@ -32,22 +33,23 @@ py::array_t<bool> edn::MultiLayerPerceptronFilter::run(py::array_t<uint64_t> arr
     }
     torch::Device device = torch::Device(device_type);
 
+    // load pretrained module
     auto module = torch::jit::load(model_path, device);
 
-    auto input = torch::empty({batchSize, memSize});
+    // perform inference
+    auto packages = torch::empty({batchSize, memSize});
     for(int i = 0; i < evlen; i++) {
         dv::Event event(ptrts[i], ptrx[i], ptry[i], ptrp[i]);
 
         int k = i % batchSize;
 
-        // build input
-        std::vector<float> patch = buildInputTensor(event);
-        input[k] = torch::from_blob(patch.data(), {memSize}, torch::kFloat);
+        // build packages
+        packages[k] = torch::from_blob(buildInputTensor(event).data(), {memSize}, torch::kFloat);
 
-        // do inference
+        // obtain output
         if (k == batchSize - 1 || i == evlen - 1) {
-            input = input.to(device);
-            torch::Tensor output = module.forward({input}).toTensor().to(torch::kCPU);
+            auto input = packages;
+            torch::Tensor output = module.forward({input.to(device)}).toTensor().to(torch::kCPU);
             
             float* result = (float* )(output.data_ptr());
             for (int j = 0; k >= 0; k--) {

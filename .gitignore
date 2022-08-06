@@ -2,6 +2,7 @@ build/
 extern/
 datasets/
 results/
+models/
 
 .vscode/
 .idea/

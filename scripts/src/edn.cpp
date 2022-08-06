@@ -42,4 +42,8 @@ PYBIND11_MODULE(cdn_utils, m)
     py::class_<edn::BackgroundActivityFilter>(m, "baf")
         .def(py::init<uint16_t, uint16_t, std::tuple<int, int, int, bool>>())
         .def("run", &edn::BackgroundActivityFilter::run);
+
+    py::class_<edn::EventDenoiseConvNeuralNetwork>(m, "edncnn")
+        .def(py::init<uint16_t, uint16_t, std::tuple<float, int, int, int, string>>())
+        .def("run", &edn::EventDenoiseConvNeuralNetwork::run);
 }
