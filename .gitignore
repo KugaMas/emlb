@@ -7,6 +7,8 @@ models/
 .vscode/
 .idea/
 
+!datasets/demo/
+
 *.so
 
 __pycache__
