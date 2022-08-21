@@ -4,8 +4,9 @@ This repository implements the work in the paper [E-MLB: Multi-Level Benchmark f
 
 *此处贴一系列gif结果动图*
 
-## Citation
-A pdf of the paper is available [here](https:xxxx). If you use any of this repository, please cite this publication as follows:
+
+## Overview
+This repository is about a simple benchmark for denoising, both including a multi-level denoising dataset, an evaluation metric and the implementation of some SOTA algorithms. More details can be found in the [paper](https:xxxx) and [video](https:xxxx). If you use any of this repository, please cite this publication as follows:
 
 ```bibtex
 @Article{Tulyakov21CVPR,
@@ -17,15 +18,8 @@ A pdf of the paper is available [here](https:xxxx). If you use any of this repos
 }
 ```
 
-
-
-## Overview
-
-E-MLB is about a simple benchmark for denoising, both including a multi-level denoising dataset, an evaluation metric and the implementation of some SOTA algorithms. More details can be found in the [paper](https:xxxx) and [video](https:xxxx).
-
-
-
-## Installation
+## Running the Code
+### Installation
 
 Create a new virtual environment if needed:
 ```
@@ -40,9 +34,7 @@ git clone https://github.com/KugaMas/EMLB.git
 pip install -r requirements.txt
 ```
 
-### Running Example
-
-Run EMLB with the following command:
+**Running Example** Run EMLB with the following command:
 ```
 TODO
 ```
@@ -50,9 +42,7 @@ Then you will receive MESR score on your terminal as follows:
 
 *place an example result table here*
 
-### Build your own denoising algorithm
-
-We provide a general template to facilitate you to evaluate your own denoising algorithm, see `${EMLB_ROOT}/scripts/utils/denoisors.py`. An example code see below:
+**Build your own denoising algorithm** We provide a general template to facilitate you to evaluate your own denoising algorithm, see `${EMLB_ROOT}/scripts/utils/denoisors.py`. An example code see below:
 
 ```python
 class your_own_denoisor(EventDenoisors):
@@ -77,16 +67,12 @@ class your_own_denoisor(EventDenoisors):
         return ev
 ```
 
-## Dataset
+### Dataset
 
 **Download** We captures a brand new Event Noisy Dataset (**END**). It should be divided into [D-END](https://drive.google.com/file/d/1ZatTSewmb-j6RsrJxMWEQIE3Sm1yraK-/view?usp=sharing) (Daytime part) and [N-END](https://drive.google.com/file/d/17ZDhuYdtHui9nqJAfiYYX27omPY7Rpl9/view?usp=sharing) (Night part), which you can download directly. The dataset structure is as follows:
 
 ```
-${EMLB_ROOT}/Datasets/
-├── D-CEND
-│   ├── Architecture
-│   │   ├── Architecture-ND00-1.aedat4
-│   │   ├── Architecture-ND00-2.aedat4
+Citationedat4
 │   │   ├── ...
 │   ├── Bicycle
 │   │   ├── Bicycle-ND00-1.aedat4
@@ -115,8 +101,7 @@ ${EMLB_ROOT}/Datasets/
 │   ├── ...
 ```
 
-### Supports
-At present, we only support reading `aedat4`, `.pkl`, `.h5` and `.txt` files. 
+**Supports** At present, we only support reading `aedat4`, `.pkl`, `.h5` and `.txt` files. 
 + The details of `aedat4` can be checked in [here](https://gitlab.com/inivation/dv/dv-python#open-a-recording-made-with-dv). The layout of `.pkl` or `.h5` files should be similar with `.aedat4` as follows:
 ```
 data = {
@@ -142,13 +127,9 @@ t3 x3 y3 p3
 ...
 ```
 
+### Benchmarks
 
-
-## Benchmarks
-
-### Prerequisites
-
-To ensure the execution of denoisors, you need to download additional [pybind11](https://github.com/pybind/pybind11) and [libtorch](https://pytorch.org/) libraries to help our cpp file compile. If you have installed them before, you can skip this step and directly modify the reference of `CMakeLists.txt`.
+**Prerequisites** To ensure the execution of denoisors, you need to download additional [pybind11](https://github.com/pybind/pybind11) and [libtorch](https://pytorch.org/) libraries to help our cpp file compile. If you have installed them before, you can skip this step and directly modify the reference of `CMakeLists.txt`.
 
 ```
 cd ${EMLB_ROOT}
@@ -175,10 +156,12 @@ unzip libtorch-shared-with-deps-1.12.0+cu116.zip
 
 ```
 
-### Compile
+**Compile**
 
 TODO
 
+
+## Utils
 
 
 ## References
