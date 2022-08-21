@@ -34,7 +34,7 @@ git clone https://github.com/KugaMas/EMLB.git
 pip install -r requirements.txt
 ```
 
-**Running Example** Run EMLB with the following command:
+You can run a **DEMO** to test EMLB with the following command:
 ```
 TODO
 ```
@@ -42,7 +42,29 @@ Then you will receive MESR score on your terminal as follows:
 
 *place an example result table here*
 
-**Build your own denoising algorithm** We provide a general template to facilitate you to evaluate your own denoising algorithm, see `${EMLB_ROOT}/scripts/utils/denoisors.py`. An example code see below:
+### Dataset
+
+We captures a brand new Event Noisy Dataset (**END**). It should be divided into [D-END](https://drive.google.com/file/d/1ZatTSewmb-j6RsrJxMWEQIE3Sm1yraK-/view?usp=sharing) (Daytime part) and [N-END](https://drive.google.com/file/d/17ZDhuYdtHui9nqJAfiYYX27omPY7Rpl9/view?usp=sharing) (Night part), which you can download directly. The dataset structure is as follows:
+
+```
+Citationedat4
+│   │   ├── ...
+│   ├── Bicycle
+│   │   ├── Bicycle-ND00-1.aedat4
+│   │   ├── ...
+│   ├── ...
+│   |
+├── DVS NOISE20
+│   ├── alley
+│   │   ├── alley-1.aedat4
+│   │   ├── alley-2.aedat4
+│
+├── ...
+```
+
+### Build your own denoising pipeline
+
+We provide a general template to facilitate you to evaluate your own denoising algorithm, see `${EMLB_ROOT}/scripts/utils/denoisors.py`. An example code see below:
 
 ```python
 class your_own_denoisor(EventDenoisors):
@@ -67,27 +89,7 @@ class your_own_denoisor(EventDenoisors):
         return ev
 ```
 
-### Dataset
-
-**Download** We captures a brand new Event Noisy Dataset (**END**). It should be divided into [D-END](https://drive.google.com/file/d/1ZatTSewmb-j6RsrJxMWEQIE3Sm1yraK-/view?usp=sharing) (Daytime part) and [N-END](https://drive.google.com/file/d/17ZDhuYdtHui9nqJAfiYYX27omPY7Rpl9/view?usp=sharing) (Night part), which you can download directly. The dataset structure is as follows:
-
-```
-Citationedat4
-│   │   ├── ...
-│   ├── Bicycle
-│   │   ├── Bicycle-ND00-1.aedat4
-│   │   ├── ...
-│   ├── ...
-│   |
-├── DVS NOISE20
-│   ├── alley
-│   │   ├── alley-1.aedat4
-│   │   ├── alley-2.aedat4
-│
-├── ...
-```
-
-**Add-on** You can download or collect a new dataset and put them in `${EMLB_ROOT}/Datasets`, it should rearranged in the following structure: 
+You can also download or collect a new dataset and put them in `${EMLB_ROOT}/Datasets`, it should rearranged in the following structure: 
 
 ```
 ${EMLB_ROOT}/Datasets/
@@ -101,7 +103,7 @@ ${EMLB_ROOT}/Datasets/
 │   ├── ...
 ```
 
-**Supports** At present, we only support reading `aedat4`, `.pkl`, `.h5` and `.txt` files. 
+At present, we only support reading `aedat4`, `.pkl`, `.h5` and `.txt` files. 
 + The details of `aedat4` can be checked in [here](https://gitlab.com/inivation/dv/dv-python#open-a-recording-made-with-dv). The layout of `.pkl` or `.h5` files should be similar with `.aedat4` as follows:
 ```
 data = {
@@ -129,7 +131,7 @@ t3 x3 y3 p3
 
 ### Benchmarks
 
-**Prerequisites** To ensure the execution of denoisors, you need to download additional [pybind11](https://github.com/pybind/pybind11) and [libtorch](https://pytorch.org/) libraries to help our cpp file compile. If you have installed them before, you can skip this step and directly modify the reference of `CMakeLists.txt`.
+To ensure the execution of denoisors, you need to download additional [pybind11](https://github.com/pybind/pybind11) and [libtorch](https://pytorch.org/) libraries to help our cpp file compile. If you have installed them before, you can skip this step and directly modify the reference of `CMakeLists.txt`.
 
 ```
 cd ${EMLB_ROOT}
@@ -163,6 +165,7 @@ TODO
 
 ## Utils
 
+TODO
 
 ## References
 
