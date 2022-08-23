@@ -5,43 +5,48 @@
 
 /* Background Activity Filter */
 edn::BackgroundActivityFilter::BackgroundActivityFilter(uint16_t sizeX, uint16_t sizeY, std::tuple<int, int, int, bool> params) : EventDenoisor(sizeX, sizeY) {
-    std::tie(thres, rL2Norm, deltaT, usePolarity) = params;
-    
-    polMatrix = (int8_t*)  std::calloc(sizeX * sizeY, sizeof(int8_t));
-    tsMatrix  = (uint64_t*) std::calloc(sizeX * sizeY, sizeof(uint64_t));
+	std::tie(supporters, distL2, deltaT, usePolarity) = params;
+
+	lastEvent = dv::Memory(sizeX * sizeY, dv::mem_depth(1));
+	// you can use this faster implementation, the above is only for unified interface
+	// int8_t *polMatrix = (int8_t*)  	std::calloc(sizeX * sizeY, sizeof(int8_t));
+	// uint64_t *tsMatrix  = (uint64_t*) std::calloc(sizeX * sizeY, sizeof(uint64_t));
 }
 
 py::array_t<bool> edn::BackgroundActivityFilter::run(py::array_t<uint64_t> arrts, py::array_t<uint16_t> arrx, py::array_t<uint16_t> arry, py::array_t<bool> arrp) {
-    std::vector<bool> vec = edn::EventDenoisor::initialization(arrts, arrx, arry, arrp);
+	std::vector<bool> vec = edn::EventDenoisor::initialization(arrts, arrx, arry, arrp);
 
-    for(int i = 0; i < evlen; i++) {
-        dv::Event event(ptrts[i], ptrx[i], ptry[i], ptrp[i]);
+	for(int i = 0; i < evlen; i++) {
+		dv::Event event(ptrts[i], ptrx[i], ptry[i], ptrp[i]);
 
-        int evIdx = event.x * sizeY + event.y;
-        if (calculateDensity(event) >= thres) {
-            vec[i] = true;
-        }
-        tsMatrix[evIdx]  = event.ts;
-        polMatrix[evIdx] = event.p;
-    }
+		int evIdx = event.x * sizeY + event.y;
+		if (calculateDensity(event) >= supporters) {
+			vec[i] = true;
+		}
 
-    return py::cast(vec);
+		struct dv::mem_cell Element = {event.p, event.ts};
+		lastEvent[evIdx].push_front(Element);
+	}
+
+	return py::cast(vec);
 }
 
 int edn::BackgroundActivityFilter::calculateDensity(dv::Event& event) {
-    int nCorrelated = 0;
+	int nCorrelated = 0;
 
-    for (int i = event.x - rL2Norm; i <= event.x + rL2Norm; i++) {
-        for (int j = event.y - rL2Norm; j <= event.y + rL2Norm; j++) {
-            if (i < 0 || i >= sizeX || j < 0 || j >= sizeY) continue;
+	for (int i = event.x - distL2; i <= event.x + distL2; i++) {
+		for (int j = event.y - distL2; j <= event.y + distL2; j++) {
+			if (i < 0 || i >= sizeX || j < 0 || j >= sizeY) continue;
 
-            int nnIdx = i * sizeY + j;
-            if (polMatrix[nnIdx] == 0) continue;
-            if (usePolarity && event.p != polMatrix[nnIdx]) continue;
-            if (event.ts - tsMatrix[nnIdx] <= deltaT) nCorrelated++;
-            if (nCorrelated >= thres) return nCorrelated;
-        }
-    }
+			int nnIdx = i * sizeY + j;
+			struct dv::mem_cell &neighbor = lastEvent[nnIdx].back();
 
-    return nCorrelated;
+			if (neighbor.p == 0) continue;
+			if (usePolarity && event.p != neighbor.p) continue;
+			if (event.ts - neighbor.ts <= deltaT) nCorrelated++;
+			if (nCorrelated >= supporters) return nCorrelated;
+		}
+	}
+
+	return nCorrelated;
 }

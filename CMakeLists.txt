@@ -5,7 +5,7 @@ project(EMLB)
 # set(CMAKE_CXX_FLAGS "-std=c++11 -O3")
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 
-set(CMAKE_BUILD_TYPE "Release")
+set(CMAKE_BUILD_TYPE "Debug")
 set(Torch_DIR ${PROJECT_SOURCE_DIR}/extern/libtorch/share/cmake/Torch)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/scripts/utils)
 

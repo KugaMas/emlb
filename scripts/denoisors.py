@@ -65,6 +65,27 @@ class baf(EventDenoisors):
         idx = model.run(ts, x, y, p)
         return ev[idx]
 
+class knoise(EventDenoisors):
+    def __init__(self, use_polarity=True, excl_hotpixel=True,
+                 supportors=1,
+                 delta_t=10000):
+
+        self.name           = 'KNoise'
+        self.annotation     = 'Khodamoradi Noise'
+        self.use_polarity   = use_polarity
+        self.excl_hotpixel  = excl_hotpixel
+
+        self.params = {
+            'supportors': supportors,
+            'deltaT'   : delta_t,
+        }
+
+    def run(self, ev, fr, size):
+        ts, x, y, p = self.pre_prosess(self, ev, size)
+        model = cdn.knoise(size[0], size[1], tuple(self.params.values()))
+        idx = model.run(ts, x, y, p)
+        return ev[idx]
+
 
 class dwf(EventDenoisors):
     def __init__(self, use_polarity=True, excl_hotpixel=True,
@@ -129,7 +150,7 @@ class edncnn(EventDenoisors):
                  threshold=0.5, 
                  radius_norm_l2=12,
                  depth=2,
-                 batch_size=750,
+                 batch_size=700,
                  model_path="EDnCNN_all_trained_v9.pt"):
                  
         self.name           = 'EDnCNN'
