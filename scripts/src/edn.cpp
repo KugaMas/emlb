@@ -55,6 +55,10 @@ PYBIND11_MODULE(cdn_utils, m)
 		.def(py::init<uint16_t, uint16_t, std::tuple<int, int, int, bool>>())
 		.def("run", &edn::DoubleWindowFilter::run);
 
+	py::class_<edn::YangNoise>(m, "ynoise")
+		.def(py::init<uint16_t, uint16_t, std::tuple<int, int, int>>())
+		.def("run", &edn::YangNoise::run);
+
 	py::class_<edn::MultiLayerPerceptronFilter>(m, "mlpf")
 		.def(py::init<uint16_t, uint16_t, std::tuple<float, int, float, int, bool, bool, string>>())
 		.def("run", &edn::MultiLayerPerceptronFilter::run);

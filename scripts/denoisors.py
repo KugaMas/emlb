@@ -113,6 +113,30 @@ class dwf(EventDenoisors):
         return ev[idx]
 
 
+class ynoise(EventDenoisors):
+    def __init__(self, use_polarity=True, excl_hotpixel=True,
+                 supportors=2,
+                 distance_l2_norm=1,
+                 delta_t=10000):
+
+        self.name           = 'YNoise'
+        self.annotation     = 'Yang Noise'
+        self.use_polarity   = use_polarity
+        self.excl_hotpixel  = excl_hotpixel
+
+        self.params = {
+            'supportors': supportors,
+            'distanceL2': distance_l2_norm,
+            'deltaT'    : delta_t,
+        }
+
+    def run(self, ev, fr, size):
+        ts, x, y, p = self.pre_prosess(self, ev, size)
+        model = cdn.ynoise(size[0], size[1], tuple(self.params.values()))
+        idx = model.run(ts, x, y, p)
+        return ev[idx]
+
+
 class mlpf(EventDenoisors):
     def __init__(self, use_polarity=True, excl_hotpixel=True,
                  threshold=0.5, 

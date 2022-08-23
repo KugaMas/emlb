@@ -24,17 +24,7 @@ namespace dv {
 
     Event(uint64_t ts_, uint16_t x_, uint16_t y_, bool p_) : ts(ts_), x(x_), y(y_), p(2 * p_ - 1) {}
   };
-
-  struct Matrix
-  {
-    boost::circular_buffer<bool> polarity;
-    boost::circular_buffer<uint64_t> timestamp;
-    Matrix(int size) {
-    polarity.set_capacity(size);
-    timestamp.set_capacity(size);
-    }
-  };
-
+  
   struct mem_cell {
     int8_t p;
     uint64_t ts;
@@ -75,7 +65,7 @@ namespace edn {
     int deltaT;
     int distL2;
     bool usePolarity;
-    dv::Memory lastEvent;
+    dv::Memory memMatrix;
 
     // Addtional function
     int calculateDensity(dv::Event& event);
@@ -115,6 +105,29 @@ namespace edn {
 
   public:
     DoubleWindowFilter(uint16_t sizeX, uint16_t sizeY, std::tuple<int, int, int, bool> params);
+    py::array_t<bool> run(py::array_t<uint64_t> arrts, py::array_t<uint16_t> arrx, py::array_t<uint16_t> arry, py::array_t<bool> arrp);
+  };
+
+
+  /* Yang Noise */
+  class YangNoise : public EventDenoisor {
+  private:
+    int deltaT;
+    int distL2;
+    int supporters;
+
+    dv::Memory memMatrix;
+    
+    int lParam;
+    int squareLParam;
+    vector<int> modLparam;
+    vector<int> dividedLparam;
+
+    // Addtional function
+    int calculateDensity(dv::Event& event);
+
+  public:
+    YangNoise(uint16_t sizeX, uint16_t sizeY, std::tuple<int, int, int> params);
     py::array_t<bool> run(py::array_t<uint64_t> arrts, py::array_t<uint16_t> arrx, py::array_t<uint16_t> arry, py::array_t<bool> arrp);
   };
 
