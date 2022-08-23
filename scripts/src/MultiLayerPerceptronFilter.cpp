@@ -20,7 +20,7 @@ edn::MultiLayerPerceptronFilter::MultiLayerPerceptronFilter(uint16_t sizeX, uint
 py::array_t<bool> edn::MultiLayerPerceptronFilter::run(py::array_t<uint64_t> arrts, py::array_t<uint16_t> arrx, py::array_t<uint16_t> arry, py::array_t<bool> arrp) {
   std::vector<bool> vec = edn::EventDenoisor::initialization(arrts, arrx, arry, arrp);
 
-    // choose inference device
+  // choose inference device
   torch::DeviceType device_type;
   if (torch::cuda::is_available()) {
     device_type = torch::kCUDA;
@@ -56,7 +56,7 @@ py::array_t<bool> edn::MultiLayerPerceptronFilter::run(py::array_t<uint64_t> arr
     
   }
 
-    return py::cast(vec);
+  return py::cast(vec);
 
 }
 
