@@ -1,0 +1,7 @@
+dv
+tqdm
+numpy
+scipy
+pandas
+tabulate
+opencv-python
