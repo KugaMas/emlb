@@ -129,3 +129,10 @@ N-CEND:
   - Gun
   frame: true
   size: *id001
+demo:
+  class:
+  - samples
+  frame: false
+  size: !!python/tuple
+  - 346
+  - 260

@@ -44,12 +44,12 @@ def count_distribution(ev, size, use_polarity=True):
     return counts
 
 
-def package_along_timestamp(ev, size, duration):
+def pack_along_timestamp(ev, size, duration):
     duration = int(duration)
     ts_refer = np.arange(ev[0, 0], ev[-1, 0], duration)
-    ts_refer_index = np.searchsorted(ev[:, 0], ts_refer)[1:]
+    refer_index = np.searchsorted(ev[:, 0], ts_refer)[1:]
 
-    packets = [ei for ei in np.split(ev, ts_refer_index)]
+    packets = [ei for ei in np.split(ev, refer_index)]
     return packets
 
 
@@ -67,3 +67,38 @@ def projection_image(ev, size, max_count=1, flip=True):
         img = np.flip(np.rot90(img, 1), axis=0).astype(np.uint8)
 
     return img
+
+
+def calc_event_structural_ratio(ev, size, count=30000, refN=20000):
+    score = np.zeros(int(len(ev)/count) - 1)
+
+    for i in range(0, len(score)):
+        st_idx = i * count
+        ed_idx = st_idx + count
+        packet = ev[st_idx:ed_idx]
+
+        cnt = count_distribution(packet, size, use_polarity=False)
+
+        N = cnt.sum()
+        L = cnt.size - ((1 - refN/N) ** cnt).sum()
+
+        score[i] = (cnt * (cnt-1) / (N + np.spacing(1)) / (N - 1 + np.spacing(1))).sum() * L
+
+    return score.mean()
+
+    # cnt = [count_distribution(ev[k][idx], size, use_polarity=False) for k in range(0, len(ev))]
+
+    # N = [c.sum() for c in cnt]
+    # L = [c.size - ((1 - refN/c.sum())**c).sum() for c in cnt]
+    # ecr = [(c * (c-1) / (n + np.spacing(1)) / (n - 1 + np.spacing(1))).sum() * l for c, n, l in zip(cnt, N, L)]
+
+    # # N = [c.sum() for c in cnt]
+    # # connectivity = np.array([[1, 1, 1], [1, 0, 1], [1, 1, 1]])
+    # # L = [(cv.filter2D((c != 0) * 1., -1, connectivity)[c != 0] > 0).sum() for c in cnt]
+    # # ecr = [(c * (c - 1) / n / (n - 1)).sum() * l for c, n, l in zip(cnt, N, L)]
+
+    # ecr = np.round(ecr, 2)
+    # ecr[np.array(N) < refN] = np.nan
+
+    # return np.round(ecr, 2)
+

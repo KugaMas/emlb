@@ -1,12 +1,15 @@
 from tqdm import tqdm
-from distutils.command.config import config
 import os
-import os.path as osp
 import glob
 import yaml
+import pandas as pd
+import os.path as osp
+from tabulate import tabulate
+
+from distutils.command.config import config
 
 
-class Dataset:
+class Dataset_iter:
     def __init__(self, name, path, size, fclass, use_aps):
         self.name    = name
         self.size    = size
@@ -37,7 +40,42 @@ class Dataset:
 
     def __len__(self):
         return self.file_nums
-        
+
+
+class Table:
+    def __init__(self, _index):
+        self.data = pd.DataFrame(index=[osp.basename(osp.splitext(f)[0]) for f in _index])
+
+    def update(self, file, model, score):
+        _index = osp.basename(file.subname)
+        _column = model.name
+        self.data.loc[_index, _column] = score
+
+    def show(self):
+        self.data.loc['MESR'] = self.data.mean(axis=0)
+
+        _headers = self.data.columns.to_list()
+        _headers.insert(0, "files")
+        print(tabulate(self.data.iloc[:-1], headers=_headers, tablefmt="grid", floatfmt=(".2f")))
+
+        _headers[0] = ' '
+        print(tabulate(self.data.iloc[-1:], headers=_headers, tablefmt="grid", floatfmt=(".2f")))
+
+
+class Dataset:
+    def __init__(self, name, path, size, fclass, use_aps):
+        self.name    = name
+        self.path    = path
+        self.size    = size
+        self.fclass  = fclass
+        self.use_aps = use_aps
+
+    def iter(self):
+        return Dataset_iter(self.name, self.path, self.size, self.fclass, self.use_aps)
+
+    def get_table(self):
+        return Table(self.iter())
+
 
 class Database:
     def __init__(self, args, save_path='options/dataset_info.yaml'):
@@ -81,7 +119,8 @@ class Database:
 
 def set_inference_options(parser):
     """ Fundamental Information Settings """
-    parser.add_argument('--output_file_type', type=str, default='pkl', help='output file type')
+    parser.add_argument('--replace_file', action='store_true', help="replace the former output file")
+    parser.add_argument('--output_file_type', type=str, default='txt', help='output file type')
 
     """ Data Preprocess Settings """
     parser.add_argument('--use_polarity',  type=bool, default=True)
