@@ -1,3 +1,15 @@
+.idea:
+  class:
+  - .gitignore
+  - DND21.iml
+  - inspectionProfiles
+  - misc.xml
+  - modules.xml
+  - workspace.xml
+  frame: false
+  size: &id001 !!python/tuple
+  - 346
+  - 260
 D-CEND:
   class:
   - Food
@@ -50,9 +62,16 @@ D-CEND:
   - Fence
   - Bubble
   frame: true
-  size: &id001 !!python/tuple
+  size: &id002 !!python/tuple
   - 346
   - 260
+DND21:
+  class:
+  - driving
+  - hotel_bar
+  - measured-noise
+  frame: false
+  size: *id001
 DVS NOISE20:
   class:
   - toys
@@ -128,7 +147,7 @@ N-CEND:
   - Screen
   - Gun
   frame: true
-  size: *id001
+  size: *id002
 demo:
   class:
   - samples

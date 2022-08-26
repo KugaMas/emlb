@@ -50,8 +50,9 @@ def load_file(file_path, size=(-1, -1), aps=False):
     return ev, fr, size
 
 
-def save_file(ev, fr, model, file_path):
-    params = model.__dict__
+def save_file(ev, fr, params, file_path):
+    if params is None: return
+
     ext = osp.splitext(osp.basename(file_path))[1]
     assert ext in ['.h5', '.pkl', '.txt'], "Unsupported write file type"
 
@@ -61,7 +62,7 @@ def save_file(ev, fr, model, file_path):
         os.makedirs(f"{dir_path}/.params")
 
     # save paramters
-    savemat(f"{dir_path}/.params/{file_name.replace(ext, '.mat')}", model.params)
+    savemat(f"{dir_path}/.params/{file_name.replace(ext, '.mat')}", params)
 
     if ext == '.pkl':
         with open(file_path, 'wb+') as f:

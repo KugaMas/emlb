@@ -39,6 +39,20 @@ class EventDenoisors(ABC):
         pass
 
 
+class raw(EventDenoisors):
+    def __init__(self, use_polarity=True, excl_hotpixel=True):
+        self.name           = 'Raw'
+        self.annotation     = 'Raw Event Data'
+        self.use_polarity   = use_polarity
+        self.excl_hotpixel  = excl_hotpixel
+
+        self.params = None
+
+    def run(self, ev, fr, size):
+        ts, x, y, p = self.pre_prosess(self, ev, size)
+        return ev
+
+
 class baf(EventDenoisors):
     def __init__(self, use_polarity=True, excl_hotpixel=True,
                  threshold=1, 
@@ -329,4 +343,8 @@ class edncnn(EventDenoisors):
 
 def Denoisor(idx, args):
     model = eval(args.denoisors[idx].lower())
+    
+    if idx >= len(args.params):
+        return model(args.use_polarity, args.excl_hotpixel)
+
     return model(args.use_polarity, args.excl_hotpixel, *args.params[idx])

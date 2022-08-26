@@ -51,15 +51,15 @@ class Table:
         _column = model.name
         self.data.loc[_index, _column] = score
 
-    def show(self):
-        self.data.loc['MESR'] = self.data.mean(axis=0)
+    def show(self, mode="summary"):
+        self.data.loc['MESR'], _headers = self.data.mean(axis=0), self.data.columns.to_list()
 
-        _headers = self.data.columns.to_list()
-        _headers.insert(0, "files")
-        print(tabulate(self.data.iloc[:-1], headers=_headers, tablefmt="grid", floatfmt=(".2f")))
-
-        _headers[0] = ' '
-        print(tabulate(self.data.iloc[-1:], headers=_headers, tablefmt="grid", floatfmt=(".2f")))
+        if mode == "details":
+            _headers.insert(0, "files")
+            print(tabulate(self.data.iloc, headers=_headers, tablefmt="grid", floatfmt=(".3f")))
+        elif mode == "summary":
+            _headers.insert(0, " ")
+            print(tabulate(self.data.iloc[-1:], headers=_headers, tablefmt="grid", floatfmt=(".3f")))
 
 
 class Dataset:
@@ -128,7 +128,7 @@ def set_inference_options(parser):
 
     """ Parser """
     args = parser.parse_args()
-    assert len(args.denoisors) == len(args.params), "The number of denoisors must match parameters"
+    # assert len(args.denoisors) == len(args.params), "The number of denoisors must match parameters"
 
     """ Load Parameters Preparation """
     args.abs_path    = os.getcwd()
