@@ -30,7 +30,7 @@ namespace dv {
         int8_t p;
         uint64_t ts;
         bool passed;
-        uint16_t otherAddr;
+        int otherAddr;
     };
     
     typedef boost::circular_buffer<mem_cell> mem_depth;
@@ -128,6 +128,7 @@ namespace edn {
         py::array_t<bool> run(py::array_t<uint64_t> arrts, py::array_t<uint16_t> arrx, py::array_t<uint16_t> arry, py::array_t<bool> arrp);
     };
 
+
     /* Event Flow Filter */
     class EventFlowFilter : public EventDenoisor {
     private:
@@ -141,6 +142,7 @@ namespace edn {
         EventFlowFilter(uint16_t sizeX, uint16_t sizeY, std::tuple<float, float> params);
         py::array_t<bool> run(py::array_t<uint64_t> arrts, py::array_t<uint16_t> arrx, py::array_t<uint16_t> arry, py::array_t<bool> arrp);
     };
+
 
     /* Yang Noise */
     class YangNoise : public EventDenoisor {
@@ -161,6 +163,27 @@ namespace edn {
 
     public:
         YangNoise(uint16_t sizeX, uint16_t sizeY, std::tuple<int, int, int> params);
+        py::array_t<bool> run(py::array_t<uint64_t> arrts, py::array_t<uint16_t> arrx, py::array_t<uint16_t> arry, py::array_t<bool> arrp);
+    };
+
+
+    /* Time Surface */
+    class TimeSurface : public EventDenoisor {
+    private:
+        int distL2;
+        float decay;
+        float thres;
+        int deltaTNeg;
+        int deltaTPos;
+        
+        dv::Memory memPos;
+        dv::Memory memNeg;
+        
+        // Addtional function
+        double calculateTimeSurface(dv::Event& event);
+    
+    public:
+        TimeSurface(uint16_t sizeX, uint16_t sizeY, std::tuple<float, int, float, int, int> params);
         py::array_t<bool> run(py::array_t<uint64_t> arrts, py::array_t<uint16_t> arrx, py::array_t<uint16_t> arry, py::array_t<bool> arrp);
     };
 

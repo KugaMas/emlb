@@ -186,6 +186,87 @@ class ynoise(EventDenoisors):
         return ev[idx]
 
 
+class timesurface(EventDenoisors):
+    def __init__(self, use_polarity=True, excl_hotpixel=True,
+                 threshold=0.4, 
+                 radius_norm_l2=1,  
+                 decay=30000):
+                 
+        self.name           = 'TS'
+        self.annotation     = 'Time Surface'
+        self.use_polarity   = use_polarity
+        self.excl_hotpixel  = excl_hotpixel
+
+        self.params = {
+            'threshold' : threshold,
+            'radiusNL2' : radius_norm_l2,
+            'decay'     : decay,
+            'deltaTNeg' : 0,
+            'deltaTPos' : 0,
+        }
+
+    def run(self, ev, fr, size):
+        ts, x, y, p = self.pre_prosess(self, ev, size)
+        model = cdn.timesurface(size[0], size[1], tuple(self.params.values()))
+        idx = model.run(ts, x, y, p)
+        return ev[idx]
+
+
+class fsae(EventDenoisors):
+    def __init__(self, use_polarity=True, excl_hotpixel=True,
+                 threshold=0.4, 
+                 radius_norm_l2=1,  
+                 decay=30000,
+                 delta_t_neg=5000):
+                 
+        self.name           = 'FSAE'
+        self.annotation     = 'Filtered Surface of Active Events'
+        self.use_polarity   = use_polarity
+        self.excl_hotpixel  = excl_hotpixel
+
+        self.params = {
+            'threshold' : threshold,
+            'radiusNL2' : radius_norm_l2,
+            'decay'     : decay,
+            'deltaTNeg' : delta_t_neg,
+            'deltaTPos' : 0,
+        }
+
+    def run(self, ev, fr, size):
+        ts, x, y, p = self.pre_prosess(self, ev, size)
+        model = cdn.timesurface(size[0], size[1], tuple(self.params.values()))
+        idx = model.run(ts, x, y, p)
+        return ev[idx]
+
+
+class iets(EventDenoisors):
+    def __init__(self, use_polarity=True, excl_hotpixel=True,
+                 threshold=0.5, 
+                 radius_norm_l2=1,  
+                 decay=30000,
+                 delta_t_neg=5000,
+                 delta_t_pos=5000):
+                 
+        self.name           = 'IETS'
+        self.annotation     = 'Inceptive Event Time Surfaces'
+        self.use_polarity   = use_polarity
+        self.excl_hotpixel  = excl_hotpixel
+
+        self.params = {
+            'threshold' : threshold,
+            'radiusNL2' : radius_norm_l2,
+            'decay'     : decay,
+            'deltaTNeg' : delta_t_neg,
+            'deltaTPos' : delta_t_pos,
+        }
+
+    def run(self, ev, fr, size):
+        ts, x, y, p = self.pre_prosess(self, ev, size)
+        model = cdn.timesurface(size[0], size[1], tuple(self.params.values()))
+        idx = model.run(ts, x, y, p)
+        return ev[idx]
+
+
 class mlpf(EventDenoisors):
     def __init__(self, use_polarity=True, excl_hotpixel=True,
                  threshold=0.5, 

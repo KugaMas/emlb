@@ -85,20 +85,3 @@ def calc_event_structural_ratio(ev, size, count=30000, refN=20000):
         score[i] = (cnt * (cnt-1) / (N + np.spacing(1)) / (N - 1 + np.spacing(1))).sum() * L
 
     return score.mean()
-
-    # cnt = [count_distribution(ev[k][idx], size, use_polarity=False) for k in range(0, len(ev))]
-
-    # N = [c.sum() for c in cnt]
-    # L = [c.size - ((1 - refN/c.sum())**c).sum() for c in cnt]
-    # ecr = [(c * (c-1) / (n + np.spacing(1)) / (n - 1 + np.spacing(1))).sum() * l for c, n, l in zip(cnt, N, L)]
-
-    # # N = [c.sum() for c in cnt]
-    # # connectivity = np.array([[1, 1, 1], [1, 0, 1], [1, 1, 1]])
-    # # L = [(cv.filter2D((c != 0) * 1., -1, connectivity)[c != 0] > 0).sum() for c in cnt]
-    # # ecr = [(c * (c - 1) / n / (n - 1)).sum() * l for c, n, l in zip(cnt, N, L)]
-
-    # ecr = np.round(ecr, 2)
-    # ecr[np.array(N) < refN] = np.nan
-
-    # return np.round(ecr, 2)
-
