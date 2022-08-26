@@ -1,5 +1,6 @@
 build/
-extern/
+extern/libtorch
+extern/pybind11
 datasets/
 results/
 models/
@@ -8,7 +9,6 @@ models/
 .idea/
 
 !datasets/demo/
-!extern/KDTree/
 
 *.so
 

@@ -1,5 +1,6 @@
 dv
 tqdm
+numba
 numpy
 scipy
 pandas

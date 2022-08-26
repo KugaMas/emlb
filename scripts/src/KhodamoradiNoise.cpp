@@ -4,7 +4,6 @@
 #include <pybind11/pybind11.h>
 
 /* Khodamoradi Noise */
-
 edn::KhodamoradiNoise::KhodamoradiNoise(uint16_t sizeX, uint16_t sizeY, std::tuple<int, int> params) : EventDenoisor(sizeX, sizeY) {
 	std::tie(supporters, deltaT) = params;
 	xCols = dv::Memory(sizeX, dv::mem_depth(1));

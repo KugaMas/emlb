@@ -20,7 +20,7 @@ edn::YangNoise::YangNoise(uint16_t sizeX, uint16_t sizeY, std::tuple<int, int, i
 }
 
 py::array_t<bool> edn::YangNoise::run(py::array_t<uint64_t> arrts, py::array_t<uint16_t> arrx, py::array_t<uint16_t> arry, py::array_t<bool> arrp) {
-  std::vector<bool> vec = edn::EventDenoisor::initialization(arrts, arrx, arry, arrp);
+	std::vector<bool> vec = edn::EventDenoisor::initialization(arrts, arrx, arry, arrp);
 
 	for (int i = 0; i < evlen; i++) {
 		dv::Event event(ptrts[i], ptrx[i], ptry[i], ptrp[i]);
