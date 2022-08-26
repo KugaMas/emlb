@@ -55,6 +55,10 @@ PYBIND11_MODULE(cdn_utils, m)
 		.def(py::init<uint16_t, uint16_t, std::tuple<int, int, int, bool>>())
 		.def("run", &edn::DoubleWindowFilter::run);
 
+	py::class_<edn::EventFlowFilter>(m, "evflow")
+		.def(py::init<uint16_t, uint16_t, std::tuple<float, float>>())
+		.def("run", &edn::EventFlowFilter::run);
+
 	py::class_<edn::YangNoise>(m, "ynoise")
 		.def(py::init<uint16_t, uint16_t, std::tuple<int, int, int>>())
 		.def("run", &edn::YangNoise::run);

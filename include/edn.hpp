@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include <KDTree.hpp>
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
@@ -108,8 +109,21 @@ namespace edn {
         py::array_t<bool> run(py::array_t<uint64_t> arrts, py::array_t<uint16_t> arrx, py::array_t<uint16_t> arry, py::array_t<bool> arrp);
     };
 
+    /* Event Flow Filter */
+    class EventFlowFilter : public EventDenoisor {
+    private:
+        float thres;
+        float distL2;
 
-  /* Yang Noise */
+        // Addtional function
+        pointVec KDPoint();
+
+    public:
+        EventFlowFilter(uint16_t sizeX, uint16_t sizeY, std::tuple<float, float> params);
+        py::array_t<bool> run(py::array_t<uint64_t> arrts, py::array_t<uint16_t> arrx, py::array_t<uint16_t> arry, py::array_t<bool> arrp);
+    };
+
+    /* Yang Noise */
     class YangNoise : public EventDenoisor {
     private:
         int deltaT;

@@ -1,8 +1,10 @@
 import os
+import math
 import os.path as osp
 import numpy as np
 from abc import ABC, abstractmethod
 
+import utils.edn_utils as edn
 import utils.cdn_utils as cdn
 import utils.event_utils as ute
 
@@ -10,15 +12,12 @@ cwd = os.getcwd() + '/models'
 
 
 class EventDenoisors(ABC):
-    def __init__(self, size, use_polarity=True, excl_hotpixel=True):
+    def __init__(self, use_polarity=True, excl_hotpixel=True):
         super().__init__()
         self.name           = 'Template'
         self.annotation     = 'Template'
         self.use_polarity   = use_polarity
         self.excl_hotpixel  = excl_hotpixel
-
-        self.size  = size
-        self.model = None
 
     @staticmethod
     def pre_prosess(self, ev, size):
@@ -65,6 +64,7 @@ class baf(EventDenoisors):
         idx = model.run(ts, x, y, p)
         return ev[idx]
 
+
 class knoise(EventDenoisors):
     def __init__(self, use_polarity=True, excl_hotpixel=True,
                  supportors=1,
@@ -109,6 +109,27 @@ class dwf(EventDenoisors):
     def run(self, ev, fr, size):
         ts, x, y, p = self.pre_prosess(self, ev, size)
         model = cdn.dwf(size[0], size[1], tuple(self.params.values()))
+        idx = model.run(ts, x, y, p)
+        return ev[idx]
+
+
+class evflow(EventDenoisors):
+    def __init__(self, use_polarity=True, excl_hotpixel=True,
+                 velocity_th = 10,
+                 radius_norm_l2 = math.sqrt(3)):
+        self.name           = 'EvFlow'
+        self.annotation     = 'Event Flow Filter'
+        self.use_polarity   = use_polarity
+        self.excl_hotpixel  = excl_hotpixel
+
+        self.params = {
+            'threshold': velocity_th,
+            'radiusNL2': radius_norm_l2,
+        }
+
+    def run(self, ev, fr, size):
+        ts, x, y, p = self.pre_prosess(self, ev, size)
+        model = cdn.evflow(size[0], size[1], tuple(self.params.values()))
         idx = model.run(ts, x, y, p)
         return ev[idx]
 
