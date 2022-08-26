@@ -8,6 +8,7 @@ models/
 .idea/
 
 !datasets/demo/
+!extern/KDTree/
 
 *.so
 
