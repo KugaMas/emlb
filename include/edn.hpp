@@ -77,6 +77,25 @@ namespace edn {
     };
 
 
+    /* Nearest Neighbor */
+    class NearestNeighbor : public EventDenoisor {
+    private:
+        int supporters;
+        int deltaT;
+        int refractoryT;
+        int distL2;
+        bool usePolarity;
+        dv::Memory memMatrix;
+        
+        // Addtional function
+        int calculateDensity(dv::Event& event);
+
+    public:
+        NearestNeighbor(uint16_t sizeX, uint16_t sizeY, std::tuple<int, int, int, int, bool> params);
+        py::array_t<bool> run(py::array_t<uint64_t> arrts, py::array_t<uint16_t> arrx, py::array_t<uint16_t> arry, py::array_t<bool> arrp);
+    };
+
+
     /* Khodamoradi Noise */
     class KhodamoradiNoise : public EventDenoisor {
     private:

@@ -65,6 +65,34 @@ class baf(EventDenoisors):
         return ev[idx]
 
 
+class nn(EventDenoisors):
+    def __init__(self, use_polarity=True, excl_hotpixel=True,
+                 threshold=1, 
+                 radius_norm_l2=1, 
+                 delta_t=10000,
+                 refractory_t=3000,
+                 cal_polarity=True):
+
+        self.name           = 'NN'
+        self.annotation     = 'Nearest Neighbor'
+        self.use_polarity   = use_polarity
+        self.excl_hotpixel  = excl_hotpixel
+
+        self.params = {
+            'threshold': threshold,
+            'radiusNL2': radius_norm_l2,
+            'deltaT'   : delta_t,
+            'refractoryT'  : refractory_t,
+            'cal_polarity' : cal_polarity,
+        }
+
+    def run(self, ev, fr, size):
+        ts, x, y, p = self.pre_prosess(self, ev, size)
+        model = cdn.nn(size[0], size[1], tuple(self.params.values()))
+        idx = model.run(ts, x, y, p)
+        return ev[idx]
+
+
 class knoise(EventDenoisors):
     def __init__(self, use_polarity=True, excl_hotpixel=True,
                  supportors=1,
@@ -195,7 +223,7 @@ class edncnn(EventDenoisors):
                  threshold=0.5, 
                  radius_norm_l2=12,
                  depth=2,
-                 batch_size=700,
+                 batch_size=600,
                  model_path="EDnCNN_all_trained_v9.pt"):
                  
         self.name           = 'EDnCNN'

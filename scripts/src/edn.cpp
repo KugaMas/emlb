@@ -47,6 +47,10 @@ PYBIND11_MODULE(cdn_utils, m)
 		.def(py::init<uint16_t, uint16_t, std::tuple<int, int, int, bool>>())
 		.def("run", &edn::BackgroundActivityFilter::run);
 
+	py::class_<edn::NearestNeighbor>(m, "nn")
+		.def(py::init<uint16_t, uint16_t, std::tuple<int, int, int, int, bool>>())
+		.def("run", &edn::NearestNeighbor::run);
+
 	py::class_<edn::KhodamoradiNoise>(m, "knoise")
 		.def(py::init<uint16_t, uint16_t, std::tuple<int, int>>())
 		.def("run", &edn::KhodamoradiNoise::run);
