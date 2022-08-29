@@ -43,7 +43,8 @@ class Dataset_iter:
 
 
 class Table:
-    def __init__(self, _index):
+    def __init__(self, _name, _index):
+        self.name = _name
         self.data = pd.DataFrame(index=[osp.basename(osp.splitext(f)[0]) for f in _index])
 
     def update(self, file, model, score):
@@ -58,7 +59,7 @@ class Table:
             _headers.insert(0, "files")
             print(tabulate(self.data.iloc, headers=_headers, tablefmt="grid", floatfmt=(".3f")))
         elif mode == "summary":
-            _headers.insert(0, " ")
+            _headers.insert(0, self.name)
             print(tabulate(self.data.iloc[-1:], headers=_headers, tablefmt="grid", floatfmt=(".3f")))
 
 
@@ -74,7 +75,7 @@ class Dataset:
         return Dataset_iter(self.name, self.path, self.size, self.fclass, self.use_aps)
 
     def get_table(self):
-        return Table(self.iter())
+        return Table(self.name, self.iter())
 
 
 class Database:
@@ -135,6 +136,7 @@ def set_inference_options(parser):
     args.abs_path    = os.getcwd()
     args.input_path  = osp.join(args.abs_path, args.input_path)
     args.output_path = osp.join(args.abs_path, args.output_path)
+    args.denoisors   = [denoisor.lower() for denoisor in args.denoisors]
 
     """ Iteratable Dataset Reader """
     args.database = Database(args)

@@ -1,5 +1,6 @@
 import os
 import pickle
+import zipfile
 
 import numpy as np
 import pandas as pd
@@ -14,7 +15,7 @@ from numpy.lib import recfunctions as rfn
 def load_file(file_path, size=(-1, -1), aps=False):
     ev, fr = None, None
     ext = osp.splitext(osp.basename(file_path))[1]
-    assert ext in ['.h5', '.txt', '.pkl', '.aedat4'], "Unsupported read file type"
+    assert ext in ['.h5', '.txt', '.pkl', '.zip', '.aedat4'], "Unsupported read file type"
     
     if ext == '.aedat4':
         with AedatFile(file_path) as f:
@@ -28,10 +29,6 @@ def load_file(file_path, size=(-1, -1), aps=False):
     if ext == '.pkl':
         with open(file_path, "rb+") as f:
             ev = pd.read_pickle(f)['events']
-            ev = np.array(ev).astype(np.uint64)[1:, :]
-    if ext == '.zip':
-        with ZipFile(file_path, 'r').open(f'events.txt') as f:  # 改events.txt
-            ev = pd.read_pickle(f)
             ev = np.array(ev).astype(np.uint64)[1:, :]
 
     if size == (-1, -1):
@@ -71,3 +68,18 @@ def save_file(ev, fr, params, file_path):
     if ext == '.txt':
         with open(file_path, 'wt+') as f:
             np.savetxt(f, ev, fmt="%16d %3d %3d %1d", delimiter=' ', newline='\n')
+
+
+def search_file(args, model, fileSeq):
+    if model.name.lower() == 'raw': 
+        return fileSeq.path, True, False
+
+    search_path = f"{args.output_path}/{model.name}"
+    search_name = f"{fileSeq.name}/{fileSeq.subname}.{args.output_file_type}"
+    
+    for root, dirs, files in os.walk(search_path):
+        for name in files:
+            if name in search_name: 
+                return osp.join(root, name), True, args.replace_file
+
+    return osp.join(search_path, search_name), False, args.replace_file
