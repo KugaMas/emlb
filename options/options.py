@@ -81,6 +81,7 @@ class Database:
     def __init__(self, args, save_path='options/dataset_info.yaml'):
         self.path, self.loader = args.input_path, dict()
         for fname in os.listdir(self.path):
+            if fname[0] == '.': continue
             self.loader[fname] = os.listdir(f"{self.path}/{fname}")
         self.iterator = iter(self.loader.keys())
 
