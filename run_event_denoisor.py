@@ -11,7 +11,7 @@ from tqdm import tqdm
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Deployment of EMLB benchmark')
-    parser.add_argument('-i', '--input_path', type=str, default='/media/kuga/瓜果山/Datasets/tmp', help='path to load dataset')
+    parser.add_argument('-i', '--input_path', type=str, default='datasets', help='path to load dataset')
     parser.add_argument('-o', '--output_path', type=str, default='results', help='path to output dataset')
     parser.add_argument('-d', '--denoisors', type=list, default=['raw'], help='choose denoisors')
     parser.add_argument("-p", "--params", type=float, default=[], nargs='+', help="specified parameters")
