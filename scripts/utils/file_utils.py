@@ -12,8 +12,8 @@ from scipy.io import savemat
 from numpy.lib import recfunctions as rfn
 
 
-def load_file(file_path, size=(-1, -1), aps=False):
-    ev, fr = None, None
+def load_file(file_path, aps=False):
+    ev, fr, size = None, None, None
     ext = osp.splitext(osp.basename(file_path))[1]
     assert ext in ['.h5', '.txt', '.pkl', '.zip', '.aedat4'], "Unsupported read file type"
     
@@ -21,17 +21,22 @@ def load_file(file_path, size=(-1, -1), aps=False):
         with AedatFile(file_path) as f:
             ev = np.hstack([packet for packet in f['events'].numpy()])
             ev = rfn.structured_to_unstructured(ev)[1:, :4].astype(np.uint64)
+            size = f['events'].size[::-1]
     if ext == '.txt':
         with open(file_path, "r+") as f:
-            ev = pd.read_csv(f, sep='\s+', skiprows=[0], header=None,
+            ev = pd.read_csv(f, sep='\s+', header=None,
                              dtype={'0': np.float32, '1': np.int8, '2': np.int8, '3': np.int8})
             ev = np.array(ev).astype(np.uint64)
+        with open(file_path, "r+") as f:
+            size = tuple(np.loadtxt(f, max_rows=1).astype(np.int_))
     if ext == '.pkl':
         with open(file_path, "rb+") as f:
             ev = pd.read_pickle(f)['events']
-            ev = np.array(ev).astype(np.uint64)[1:, :]
+            ev = np.array(ev).astype(np.uint64)
+        with open(file_path, "rb+") as f:
+            size = pd.read_pickle(f)['size']
 
-    if size == (-1, -1):
+    if size == None:
         x = int(np.max(ev[:, 1]) + 1)
         y = int(np.max(ev[:, 2]) + 1)
         size = (x, y)
@@ -47,7 +52,7 @@ def load_file(file_path, size=(-1, -1), aps=False):
     return ev, fr, size
 
 
-def save_file(ev, fr, params, file_path):
+def save_file(ev, fr, size, params, file_path):
     if params is None: return
 
     ext = osp.splitext(osp.basename(file_path))[1]
@@ -63,10 +68,12 @@ def save_file(ev, fr, params, file_path):
 
     if ext == '.pkl':
         with open(file_path, 'wb+') as f:
-            pickle.dump(dict(events=ev, frames=fr), f)
+            pickle.dump(dict(events=ev, frames=fr, size=size), f)
 
     if ext == '.txt':
-        with open(file_path, 'wt+') as f:
+        with open(file_path, 'wt') as f:
+            f.write('%3d %3d\n' % (size[0], size[1]))
+        with open(file_path, 'at') as f:
             np.savetxt(f, ev, fmt="%16d %3d %3d %1d", delimiter=' ', newline='\n')
 
 

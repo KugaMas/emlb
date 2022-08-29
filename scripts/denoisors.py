@@ -281,6 +281,22 @@ class iets(EventDenoisors):
         return ev[idx]
 
 
+class gef(EventDenoisors):
+    def __init__(self, use_polarity=True, excl_hotpixel=True):
+        self.name       = 'GEF'
+        self.annotation = 'Guided Event Filter'
+        self.use_polarity   = use_polarity
+        self.excl_hotpixel  = excl_hotpixel
+
+        self.params ={
+            'TODO': False,
+        }
+
+    def run(self, ev, fr, size):
+        ts, x, y, p = self.pre_prosess(self, ev, size)
+        return ev
+
+
 class mlpf(EventDenoisors):
     def __init__(self, use_polarity=True, excl_hotpixel=True,
                  threshold=0.5, 
@@ -339,6 +355,22 @@ class edncnn(EventDenoisors):
         model = cdn.edncnn(size[0], size[1], tuple(self.params.values()))
         idx = model.run(ts, x, y, p)
         return ev[idx]
+
+
+class evzoom(EventDenoisors):
+    def __init__(self, use_polarity=True, excl_hotpixel=True):
+        self.name       = 'EvZoom'
+        self.annotation = 'Event Zoom'
+        self.use_polarity   = use_polarity
+        self.excl_hotpixel  = excl_hotpixel
+
+        self.params ={
+            'TODO': False,
+        }
+
+    def run(self, ev, fr, size):
+        ts, x, y, p = self.pre_prosess(self, ev, size)
+        return ev
 
 
 def Denoisor(idx, args):

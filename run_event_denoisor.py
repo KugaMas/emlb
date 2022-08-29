@@ -11,9 +11,9 @@ from tqdm import tqdm
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Deployment of EMLB benchmark')
-    parser.add_argument('-i', '--input_path', type=str, default='/media/kuga/瓜果山/Datasets/Datasets', help='path to load dataset')
-    parser.add_argument('-o', '--output_path', type=str, default='/media/kuga/瓜果山/results', help='path to output dataset')
-    parser.add_argument('-d', '--denoisors', type=list, default=['raw', 'baf', 'nn', 'knoise', 'dwf', 'evflow', 'ynoise', 'timesurface', 'fsae', 'iets', 'mlpf', 'edncnn'], help='choose denoisors')
+    parser.add_argument('-i', '--input_path', type=str, default='/media/kuga/瓜果山/Datasets/tmp', help='path to load dataset')
+    parser.add_argument('-o', '--output_path', type=str, default='results', help='path to output dataset')
+    parser.add_argument('-d', '--denoisors', type=list, default=['raw'], help='choose denoisors')
     parser.add_argument("-p", "--params", type=float, default=[], nargs='+', help="specified parameters")
 
     parser.add_argument('-w', '--save_file', action='store_false', help="save denoising result")
@@ -37,14 +37,14 @@ if __name__ == '__main__':
                 if search_flag and not replace_flag:
                     if not args.calc_esr_score: continue
                     # load denoised event data
-                    ev, fr, size = load_file(output_path, aps=fileSeq.use_aps, size=fileSeq.size)
+                    ev, fr, size = load_file(output_path, aps=fileSeq.use_aps)
                 else:
                     # load noisy event data and perform inference
-                    ev, fr, size = load_file(fileSeq.path, aps=fileSeq.use_aps, size=fileSeq.size)
+                    ev, fr, size = load_file(fileSeq.path, aps=fileSeq.use_aps)
                     ev = model.run(ev, fr, size)
                     # save inference result
                     if args.save_file:
-                        save_file(ev, fr, model.params, output_path)
+                        save_file(ev, fr, size, model.params, output_path)
 
                 # calculate ESR
                 score = calc_event_structural_ratio(ev, size)            

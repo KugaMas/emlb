@@ -10,9 +10,8 @@ from distutils.command.config import config
 
 
 class Dataset_iter:
-    def __init__(self, name, path, size, fclass, use_aps):
+    def __init__(self, name, path, fclass, use_aps):
         self.name    = name
-        self.size    = size
         self.fclass  = fclass
         self.use_aps = use_aps
         
@@ -64,15 +63,14 @@ class Table:
 
 
 class Dataset:
-    def __init__(self, name, path, size, fclass, use_aps):
+    def __init__(self, name, path, fclass, use_aps):
         self.name    = name
         self.path    = path
-        self.size    = size
         self.fclass  = fclass
         self.use_aps = use_aps
 
     def iter(self):
-        return Dataset_iter(self.name, self.path, self.size, self.fclass, self.use_aps)
+        return Dataset_iter(self.name, self.path, self.fclass, self.use_aps)
 
     def get_table(self):
         return Table(self.name, self.iter())
@@ -97,7 +95,6 @@ class Database:
         for fname, flist in self.loader.items():
             if fname in self.config.keys(): continue
             self.config[fname] = dict()
-            self.config[fname]['size']  = (346, 260)
             self.config[fname]['frame'] = False
             self.config[fname]['class'] = flist
 
@@ -112,17 +109,16 @@ class Database:
         _fname = next(self.iterator)
         _fpath = f"{self.path}/{_fname}"
 
-        _size  = self.config[_fname]['size']
         _frame = self.config[_fname]['frame']
         _class = self.config[_fname]['class']
         
-        return Dataset(_fname, _fpath, _size, _class, _frame)
+        return Dataset(_fname, _fpath, _class, _frame)
 
 
 def set_inference_options(parser):
     """ Fundamental Information Settings """
     parser.add_argument('--replace_file', action='store_true', help="replace the former output file")
-    parser.add_argument('--output_file_type', type=str, default='txt', help='output file type')
+    parser.add_argument('--output_file_type', type=str, default='pkl', help='output file type')
 
     """ Data Preprocess Settings """
     parser.add_argument('--use_polarity',  type=bool, default=True)
