@@ -77,12 +77,12 @@ def save_file(ev, fr, size, params, file_path):
             np.savetxt(f, ev, fmt="%16d %3d %3d %1d", delimiter=' ', newline='\n')
 
 
-def search_file(args, model, fileSeq):
+def search_file(args, model, dataset, seq):
     if model.name.lower() == 'raw': 
-        return fileSeq.path, True, False
+        return seq.path, True, False
 
     search_path = f"{args.output_path}/{model.name}"
-    search_name = f"{fileSeq.name}/{fileSeq.subname}.{args.output_file_type}"
+    search_name = f"{dataset.name}/{seq.subname}.{args.output_file_type}"
     
     for root, dirs, files in os.walk(search_path):
         for name in files:

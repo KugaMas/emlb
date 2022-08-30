@@ -13,7 +13,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Deployment of EMLB benchmark')
     parser.add_argument('-i', '--input_path', type=str, default='datasets', help='path to load dataset')
     parser.add_argument('-o', '--output_path', type=str, default='results', help='path to output dataset')
-    parser.add_argument('-d', '--denoisors', type=list, default=['raw'], help='choose denoisors')
+    parser.add_argument('-d', '--denoisors', type=list, default=['evflow'], help='choose denoisors')
     parser.add_argument("-p", "--params", type=float, default=[], nargs='+', help="specified parameters")
 
     parser.add_argument('-w', '--save_file', action='store_false', help="save denoising result")
@@ -22,25 +22,27 @@ if __name__ == '__main__':
     args = set_inference_options(parser)
     
     for dataset in Database(args):
-        table = dataset.get_table()
+        table = dataset.table()
         
         for idx in range(len(args.denoisors)):
-            model, fileSeq = Denoisor(idx, args), dataset.iter()
+            model = Denoisor(idx, args)
+            pbar = tqdm(dataset.seqs())
 
-            pbar = tqdm(fileSeq)
-            for file in pbar:
-                info = (model.name, fileSeq.subname.split('/')[1])
-                pbar.set_description("Now implementing %10s to inference on %15s" % info)
+            for seq in pbar:
+                # print info
+                pbar.set_description("Now implementing %10s to inference on %15s" % (model.name, seq.name))
 
-                output_path, search_flag, replace_flag = search_file(args, model, fileSeq)
+                # search existing files
+                output_path, search_flag, replace_flag = search_file(args, model, dataset, seq)
+
                 # skip existing files
                 if search_flag and not replace_flag:
-                    if not args.calc_esr_score: continue
                     # load denoised event data
-                    ev, fr, size = load_file(output_path, aps=fileSeq.use_aps)
+                    if not args.calc_esr_score: continue
+                    ev, fr, size = load_file(output_path, aps=seq.use_aps)
                 else:
                     # load noisy event data and perform inference
-                    ev, fr, size = load_file(fileSeq.path, aps=fileSeq.use_aps)
+                    ev, fr, size = load_file(seq.path, aps=seq.use_aps)
                     ev = model.run(ev, fr, size)
                     # save inference result
                     if args.save_file:
@@ -48,6 +50,6 @@ if __name__ == '__main__':
 
                 # calculate ESR
                 score = calc_event_structural_ratio(ev, size)            
-                table.update(fileSeq, model, score)
+                table.update(seq, model, score)
 
-        table.show()
+        table.show(mode="summary")

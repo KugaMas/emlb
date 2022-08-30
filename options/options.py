@@ -9,45 +9,13 @@ from tabulate import tabulate
 from distutils.command.config import config
 
 
-class Dataset_iter:
-    def __init__(self, name, path, fclass, use_aps):
-        self.name    = name
-        self.fclass  = fclass
-        self.use_aps = use_aps
-        
-        # load all file paths
-        self.file_paths = [file for folder in fclass for file in glob.glob(f"{path}/{folder}/*")]
-        self.file_nums  = len(self.file_paths)
-        self.file_paths.sort()
-        self.file_paths = self.file_paths.__iter__()
-
-        # initialize nullptr parameters
-        self.ev      = None
-        self.fr      = None
-        self.path    = None
-        self.subname = None
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        self.path  = self.file_paths.__next__()
-        path, name = osp.split(self.path)
-        name, ext  = osp.splitext(name)
-        self.subname = f"{osp.basename(path)}/{name}"
-        return self.path
-
-    def __len__(self):
-        return self.file_nums
-
-
 class Table:
     def __init__(self, _name, _index):
         self.name = _name
         self.data = pd.DataFrame(index=[osp.basename(osp.splitext(f)[0]) for f in _index])
 
     def update(self, file, model, score):
-        _index = osp.basename(file.subname)
+        _index = file.name
         _column = model.name
         self.data.loc[_index, _column] = score
 
@@ -56,10 +24,21 @@ class Table:
 
         if mode == "details":
             _headers.insert(0, "files")
-            print(tabulate(self.data.iloc, headers=_headers, tablefmt="grid", floatfmt=(".3f")))
+            print(tabulate(self.data.iloc[:],   headers=_headers, tablefmt="grid", floatfmt=(".3f")))
         elif mode == "summary":
             _headers.insert(0, self.name)
             print(tabulate(self.data.iloc[-1:], headers=_headers, tablefmt="grid", floatfmt=(".3f")))
+
+
+class fileSeq:
+    def __init__(self, path, use_aps):
+        self.path = path
+        self.use_aps = use_aps
+
+        fpath, fname  = osp.split(self.path)
+        fname, fext   = osp.splitext(fname)
+        self.name     = fname
+        self.subname  = f"{osp.basename(fpath)}/{fname}"
 
 
 class Dataset:
@@ -69,11 +48,17 @@ class Dataset:
         self.fclass  = fclass
         self.use_aps = use_aps
 
-    def iter(self):
-        return Dataset_iter(self.name, self.path, self.fclass, self.use_aps)
+        # load all file paths
+        self.file_paths = [file for folder in fclass for file in glob.glob(f"{path}/{folder}/*")]
+        self.file_nums  = len(self.file_paths)
+        self.file_paths.sort()
+    
+    def seqs(self):
+        args = (self.use_aps,)
+        return [fileSeq(path, *args) for path in self.file_paths]
 
-    def get_table(self):
-        return Table(self.name, self.iter())
+    def table(self):
+        return Table(self.name, self.file_paths)
 
 
 class Database:

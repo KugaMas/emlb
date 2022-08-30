@@ -70,6 +70,7 @@ def projection_image(ev, size, max_count=1, flip=True):
 
 
 def calc_event_structural_ratio(ev, size, count=30000, refN=20000):
+    if len(ev) < 2 * count: return 0.5
     score = np.zeros(int(len(ev)/count) - 1)
 
     for i in range(0, len(score)):
