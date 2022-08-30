@@ -16,7 +16,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/scripts/utils)
 aux_source_directory(${PROJECT_SOURCE_DIR}/scripts/src DIR_SRCS)
 
 find_package(Eigen3 REQUIRED)
-find_package(CUDAToolkit REQUIRED)
+find_package(CUDA REQUIRED)
 find_package(Torch REQUIRED CONFIG NO_DEFAULT_PATH)
 
 # head file include
