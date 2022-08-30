@@ -22,10 +22,8 @@ find_package(Torch REQUIRED CONFIG NO_DEFAULT_PATH)
 # head file include
 include_directories(${EIGEN3_INCLUDE_DIRS})
 include_directories(${PROJECT_SOURCE_DIR}/include)
-include_directories(${PROJECT_SOURCE_DIR}/extern/KDTree)
-add_subdirectory(${PROJECT_SOURCE_DIR}/extern/KDTree)
 add_subdirectory(${PROJECT_SOURCE_DIR}/extern/pybind11)
 
 pybind11_add_module(cdn_utils ${DIR_SRCS})
 
-target_link_libraries(cdn_utils PRIVATE KDTree ${TORCH_LIBRARIES})
+target_link_libraries(cdn_utils PRIVATE ${TORCH_LIBRARIES})

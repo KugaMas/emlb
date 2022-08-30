@@ -158,7 +158,8 @@ class dwf(EventDenoisors):
 class evflow(EventDenoisors):
     def __init__(self, use_polarity=True, excl_hotpixel=True,
                  velocity_th = 10,
-                 radius_norm_l2 = math.sqrt(3)):
+                 radius_norm_l2 = 1,
+                 delta_t=1500):
         self.name           = 'EvFlow'
         self.annotation     = 'Event Flow Filter'
         self.use_polarity   = use_polarity
@@ -167,6 +168,7 @@ class evflow(EventDenoisors):
         self.params = {
             'threshold': velocity_th,
             'radiusNL2': radius_norm_l2,
+            'deltaT'    : delta_t,
         }
 
     def run(self, ev, fr, size):

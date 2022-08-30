@@ -24,7 +24,7 @@ def load_file(file_path, aps=False):
             size = f['events'].size[::-1]
     if ext == '.txt':
         with open(file_path, "r+") as f:
-            ev = pd.read_csv(f, sep='\s+', header=None,
+            ev = pd.read_csv(f, sep='\s+', header=None, skiprows=[0],
                              dtype={'0': np.float32, '1': np.int8, '2': np.int8, '3': np.int8})
             ev = np.array(ev).astype(np.uint64)
         with open(file_path, "r+") as f:
