@@ -82,11 +82,13 @@ def search_file(args, model, dataset, seq):
         return seq.path, True, False
 
     search_path = f"{args.output_path}/{model.name}"
-    search_name = f"{dataset.name}/{seq.subname}.{args.output_file_type}"
+    search_name = f"{seq.name}.{args.output_file_type}"
     
     for root, dirs, files in os.walk(search_path):
         for name in files:
-            if name in search_name: 
+            if name is search_name: 
                 return osp.join(root, name), True, args.replace_file
 
-    return osp.join(search_path, search_name), False, args.replace_file
+    output_name = f"{dataset.name}/{seq.subname}.{args.output_file_type}"
+    
+    return osp.join(search_path, output_name), False, args.replace_file
