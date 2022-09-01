@@ -20,7 +20,12 @@ class Table:
         self.data.loc[_index, _column] = score
 
     def show(self, mode="summary"):
-        self.data.loc['MESR'], _headers = self.data.mean(axis=0), self.data.columns.to_list()
+        _mean, _headers = self.data.mean(axis=0), self.data.columns.to_list()
+        if not _mean.empty:
+            self.data.loc['MESR'] = _mean
+        else:
+            return    
+
 
         if mode == "details":
             _headers.insert(0, "files")

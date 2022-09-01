@@ -30,7 +30,8 @@ if __name__ == '__main__':
 
             for seq in pbar:
                 # print info
-                pbar.set_description("Now implementing %10s to inference on %15s" % (model.name, seq.name))
+                info = (model.name.center(10, " "), seq.name.rjust(15, " "), dataset.name.ljust(15, " "))
+                pbar.set_description("Implementing %s to inference on %s / %s" % info)
 
                 # search existing files
                 output_path, search_flag, replace_flag = search_file(args, model, dataset, seq)

@@ -53,7 +53,8 @@ if __name__ == '__main__':
         for idx in pbar:
             # print info
             model = Denoisor(idx, args)
-            pbar.set_description("Now implementing %10s to inference" % model.name)
+            info = (model.name.center(10, " "), dataset.name.ljust(15, " "))
+            pbar.set_description("Implementing %s to inference on  / %s" % info)
             
             pool = multiprocessing.Pool(processes=args.process)
             for result in pool.starmap(Func, zip(dataset.seqs().__iter__())):
