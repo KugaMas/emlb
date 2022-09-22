@@ -138,13 +138,16 @@ cd ${EMLB_ROOT}
 mkdir extern
 ```
 
+install necessary compile environment
+```
+sudo apt-get install python3-dev
+sudo apt-get install libeigen3-dev
+sudo apt-get install libboost-all-dev
+```
+
 **pybind11**
 
 ```
-# install necessary compile environment
-sudo apt-get install python3-dev
-sudo apt-get install libboost-all-dev
-
 # clone pybind11 in our repository, or you can put them in another path
 git submodule add -b stable https://github.com/pybind/pybind11 extern/pybind11
 ```

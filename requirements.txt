@@ -3,6 +3,7 @@ tqdm
 numba
 numpy
 scipy
+pyyaml
 pandas
 tabulate
 opencv-python

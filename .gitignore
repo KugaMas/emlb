@@ -1,6 +1,4 @@
 build/
-extern/libtorch
-extern/pybind11
 datasets/
 results/
 models/

@@ -304,7 +304,7 @@ class mlpf(EventDenoisors):
                  threshold=0.5, 
                  radius_norm_l2=3, 
                  tau_ts=1E5, 
-                 batch_size=1E7, 
+                 batch_size=1000, 
                  cal_timestamp=True, 
                  cal_polarity=True, 
                  model_path="MLPF_2xMSEO1H20_linear_7.pt"):
@@ -336,7 +336,7 @@ class edncnn(EventDenoisors):
                  threshold=0.5, 
                  radius_norm_l2=12,
                  depth=2,
-                 batch_size=600,
+                 batch_size=100,
                  model_path="EDnCNN_all_trained_v9.pt"):
                  
         self.name           = 'EDnCNN'

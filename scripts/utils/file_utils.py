@@ -89,6 +89,6 @@ def search_file(args, model, dataset, seq):
             if name == search_name: 
                 return osp.join(root, name), True, args.replace_file
 
-    output_name = f"{dataset.name}/{seq.subname}.{args.output_file_type}"
+    output_name = f"{dataset.name}/{seq.category}/{seq.name}.{args.output_file_type}"
     
     return osp.join(search_path, output_name), False, args.replace_file

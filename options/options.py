@@ -12,27 +12,28 @@ from distutils.command.config import config
 class Table:
     def __init__(self, _name, _index):
         self.name = _name
-        self.data = pd.DataFrame(index=[osp.basename(osp.splitext(f)[0]) for f in _index])
+        self.data = pd.DataFrame([f.category for f in _index], index=[f.fullname for f in _index], columns=['class'])
 
     def update(self, file, model, score):
-        _index = file.name
+        _index = file.fullname
         _column = model.name
         self.data.loc[_index, _column] = score
 
     def show(self, mode="summary"):
-        _mean, _headers = self.data.mean(axis=0), self.data.columns.to_list()
+        if mode == "summary":
+            _data = self.data.groupby('class').apply(lambda x:x.mean(numeric_only=True))
+
+        elif mode == "details":
+            _data = self.data.drop('class', axis=1)
+
+        _mean, _headers = self.data.mean(numeric_only=True), self.data.columns.to_list()[1:]
         if not _mean.empty:
-            self.data.loc['MESR'] = _mean
+            _data.loc['MESR'] = _mean
         else:
-            return    
-
-
-        if mode == "details":
-            _headers.insert(0, "files")
-            print(tabulate(self.data.iloc[:],   headers=_headers, tablefmt="grid", floatfmt=(".3f")))
-        elif mode == "summary":
-            _headers.insert(0, self.name)
-            print(tabulate(self.data.iloc[-1:], headers=_headers, tablefmt="grid", floatfmt=(".3f")))
+            return
+        _headers.insert(0, self.name)
+        
+        print(tabulate(_data, headers=_headers, tablefmt="grid", floatfmt=(".3f")), "\n")
 
 
 class fileSeq:
@@ -43,7 +44,8 @@ class fileSeq:
         fpath, fname  = osp.split(self.path)
         fname, fext   = osp.splitext(fname)
         self.name     = fname
-        self.subname  = f"{osp.basename(fpath)}/{fname}"
+        self.category = osp.basename(fpath)
+        self.fullname = osp.join(self.category, self.name)
 
 
 class Dataset:
@@ -63,7 +65,7 @@ class Dataset:
         return [fileSeq(path, *args) for path in self.file_paths]
 
     def table(self):
-        return Table(self.name, self.file_paths)
+        return Table(self.name, self.seqs())
 
 
 class Database:
@@ -107,7 +109,6 @@ class Database:
 
 def set_inference_options(parser):
     """ Fundamental Information Settings """
-    parser.add_argument('--replace_file', action='store_true', help="replace the former output file")
     parser.add_argument('--output_file_type', type=str, default='pkl', help='output file type')
 
     """ Data Preprocess Settings """

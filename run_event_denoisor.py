@@ -11,13 +11,14 @@ from tqdm import tqdm
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Deployment of EMLB benchmark')
-    parser.add_argument('-i', '--input_path', type=str, default='datasets', help='path to load dataset')
-    parser.add_argument('-o', '--output_path', type=str, default='results', help='path to output dataset')
-    parser.add_argument('-d', '--denoisors', type=list, default=['evflow'], help='choose denoisors')
+    parser.add_argument('-i', '--input_path', type=str, default='./datasets', help='path to load dataset')
+    parser.add_argument('-o', '--output_path', type=str, default='./results', help='path to output dataset')
+    parser.add_argument('-d', '--denoisors', type=list, default=['raw', 'baf', 'nn', 'knoise', 'dwf', 'evflow', 'ynoise', 'timesurface', 'iets', 'mlpf', 'edncnn'], help='choose denoisors')
     parser.add_argument("-p", "--params", type=float, default=[], nargs='+', help="specified parameters")
 
     parser.add_argument('-w', '--save_file', action='store_false', help="save denoising result")
     parser.add_argument('-s', '--calc_esr_score', action='store_false', help="ecaluate esr performance")
+    parser.add_argument('-r', '--replace_file', action='store_true', help="replace the former output file")
 
     args = set_inference_options(parser)
     
@@ -26,7 +27,7 @@ if __name__ == '__main__':
         
         for idx in range(len(args.denoisors)):
             model = Denoisor(idx, args)
-            pbar = tqdm(dataset.seqs())
+            pbar = tqdm(dataset.seqs(), leave=False)
 
             for seq in pbar:
                 # print info
@@ -54,3 +55,4 @@ if __name__ == '__main__':
                 table.update(seq, model, score)
 
         table.show(mode="summary")
+        

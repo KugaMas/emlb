@@ -69,20 +69,20 @@ def projection_image(ev, size, max_count=1, flip=True):
     return img
 
 
-def calc_event_structural_ratio(ev, size, count=30000, refN=20000):
-    if len(ev) < 2 * count: return 0.5
-    score = np.zeros(int(len(ev)/count) - 1)
+def calc_event_structural_ratio(ev, size, N=30000, M=20000):
+    if len(ev) < 2 * N: return 0.5
+    score = np.zeros(int(len(ev)/N) - 1)
 
     for i in range(0, len(score)):
-        st_idx = i * count
-        ed_idx = st_idx + count
+        st_idx = i * N
+        ed_idx = st_idx + N
         packet = ev[st_idx:ed_idx]
 
         cnt = count_distribution(packet, size, use_polarity=False)
 
-        N = cnt.sum()
-        L = cnt.size - ((1 - refN/N) ** cnt).sum()
+        NTSS = (cnt * (cnt - 1)).sum() / (N + np.spacing(1)) / (N - 1 + np.spacing(1))
+        L = cnt.size - ((1 - M/N) ** cnt).sum()
 
-        score[i] = (cnt * (cnt-1) / (N + np.spacing(1)) / (N - 1 + np.spacing(1))).sum() * L
+        score[i] = np.sqrt(NTSS * L)
 
     return score.mean()

@@ -1,9 +1,4 @@
-.Calib:
+demo:
   class:
-  - D-CEND
-  - N-CEND
+  - samples
   frame: false
-  size: !!python/tuple
-  - 346
-  - 260
-  
