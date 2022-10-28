@@ -1,9 +1,9 @@
-dv
+dv==1.0.10
 tqdm
 numba
 numpy
 scipy
-pyyaml
-pandas
+pyyaml==6.0
+pandas==1.4.3
 tabulate
 opencv-python
